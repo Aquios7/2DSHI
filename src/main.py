@@ -16,6 +16,7 @@ from stream_tools import stream_tools
 from image_processing import bit_depth_conversion as bdc
 from path_management import image_management as im
 from datetime import datetime
+from gui import startupGUI
 
 
 # Create an instance of an ArgumentParser Object
@@ -24,26 +25,30 @@ parser = argparse.ArgumentParser()
 
 if __name__ == "__main__":
     args = None
-    run_mode = uiv.determine_run_mode(sys.argv[:])
+    # run_mode = uiv.determine_run_mode(sys.argv[:])
     current_directory = os.getcwd()
 
-    if run_mode == 1:  # Apply the parameters for the previous run, exactly.
-        prev_run = find_previous_run.get_latest_run()
-        uiv.display_dict_values(prev_run)
-        args = prev_run
+    # run a pre-start GUI asking for specifics before the main run
+    current_directory = startupGUI.begin_startup(current_directory)
 
-    if run_mode == 2:  # Apply the parameters specified in the command line, exactly.
-        parser = get_command_line_parameters.initialize_arg_parser()
-        args = vars(parser.parse_args())  # Parse user arguments into a dictionary)
-        uiv.display_dict_values(args)
 
-    if run_mode == 3:  # Apply last runs parameters, but with some modifications you'll specify.
-        prev_run = find_previous_run.get_latest_run()
-        uiv.display_dict_values(prev_run)
-        args = uiv.update_previous_params(prev_run)
+    # if run_mode == 1:  # Apply the parameters for the previous run, exactly.
+    #     prev_run = find_previous_run.get_latest_run()
+    #     uiv.display_dict_values(prev_run)
+    #     args = prev_run
+    #
+    # if run_mode == 2:  # Apply the parameters specified in the command line, exactly.
+    #     parser = get_command_line_parameters.initialize_arg_parser()
+    #     args = vars(parser.parse_args())  # Parse user arguments into a dictionary)
+    #     uiv.display_dict_values(args)
+    #
+    # if run_mode == 3:  # Apply last runs parameters, but with some modifications you'll specify.
+    #     prev_run = find_previous_run.get_latest_run()
+    #     uiv.display_dict_values(prev_run)
+    #     args = uiv.update_previous_params(prev_run)
 
     current_datetime = datetime.now().strftime("%Y_%m_%d__%H_%M")
-    current_direc = os.getcwd()
+    current_direc = current_directory
     run_directory = ''
     run_directory = os.path.join(run_directory, current_direc, current_datetime)
 
