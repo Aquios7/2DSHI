@@ -48,7 +48,11 @@ def yes_no_quit(preceding_msg, specify_options=True, app=None):
                 app.destroy()
                 app.callback()
             except Exception:
-                pass
+                # destroy all existing tkinter windows
+                for widget in app.Toplevel.winfo_children(app.Tk()):
+                    widget.destroy()
+                # exit the program
+                sys.exit(1)
         sys.exit()
     elif user_input[0] == "y":
         return True

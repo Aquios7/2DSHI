@@ -1,16 +1,25 @@
 import traceback
 from pypylon import pylon  # Import relevant pypylon packages/modules
 import cv2
-from image_processing import bit_depth_conversion as bdc
-from coregistration import find_gaussian_profile as fgp
 import os, sys
+import glob
+import configparser
 from . import App as tk_app
 from . import histograms as hgs
 from . import s1, s2, s3, s4, s5, s6, s7, s8, s9
-from experiment_set_up import user_input_validation as uiv
 from . import store_params as sp
+# used for Windows
+from image_processing import bit_depth_conversion as bdc
+from coregistration import find_gaussian_profile as fgp
 from experiment_set_up import find_previous_run as fpr
 from constants import STEP_DESCRIPTIONS as sd
+from experiment_set_up import user_input_validation as uiv
+# used for Linux
+# from src.image_processing import bit_depth_conversion as bdc
+# from src.coregistration import find_gaussian_profile as fgp
+# from src.experiment_set_up import find_previous_run as fpr
+# from src.constants import STEP_DESCRIPTIONS as sd
+# from src.experiment_set_up import user_input_validation as uiv
 
 
 twelve_bit_max = (2 ** 12) - 1
@@ -18,6 +27,12 @@ eight_bit_max = (2 ** 8) - 1
 
 class Stream:
     def __init__(self, fb=-1, save_imgs=False):
+        self.test = False
+        self.reason = None
+        self.c_folder = None
+        self.config = 'config.ini'
+        self.args = None
+
         self.continuous = True
         self.single_shot = False if self.continuous else True
         self.tkapp = None
@@ -93,7 +108,22 @@ class Stream:
 
         self.n_sigma = None
         self.prv_run_dir = None
-        #previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream_object)
+
+    def save_config(self):
+        config = configparser.ConfigParser()
+        for key, value in self.__dict__.items():
+            config.set('DEFAULT', key, str(value))
+        c_path = os.path.join(self.c_folder, self.config)
+        with open(c_path, 'w') as config_file:
+            config.write(config_file)
+
+    def load_config(self):
+        config = configparser.ConfigParser()
+        c_path = os.path.join(self.c_folder, self.config)
+        config.read(c_path)
+        for key in self.__dict__:
+            if key in config['DEFAULT']:
+                setattr(self, key, eval(config['DEFAULT'][key]))
 
     def get_12bit_a_frames(self):
         return self.a_frames
@@ -166,7 +196,7 @@ class Stream:
 
             self.jump_level = int(jump_level_input)
 
-    def get_cameras(self, config_files):
+    def get_cameras(self, config_files, test):
         """
         Should be called AFTER and with the return value of find_devices() (as implied by the first parameter: devices)
         Args:
@@ -177,34 +207,46 @@ class Stream:
             dict: A dictionary of cameras with ascending lowercase alphabetical letters as keys.
         """
 
-        tlFactory = pylon.TlFactory.GetInstance()  # Get the transport layer factory.
-        devices = tlFactory.EnumerateDevices()  # Get all attached devices and exit application if no device is found.
+        # updates test
+        self.test = test
 
-        cameras = dict()
+        # check if this is a test run
+        if self.test:
+            # default cam
+            vid = cv2.VideoCapture(0)
+            vid2 = cv2.VideoCapture(0)
+            devices = [vid, vid2]
+        else:
+            tlFactory = pylon.TlFactory.GetInstance()  # Get the transport layer factory.
+            devices = tlFactory.EnumerateDevices()  # Get all attached devices and exit application if no device is found.
 
-        # Create an array of instant cameras for the found devices and avoid exceeding a maximum number of devices.
-        instant_camera_array = pylon.InstantCameraArray(min(len(devices), 2))
-        self.all_cams = instant_camera_array
+            cameras = dict()
 
-        for i, cam in enumerate(instant_camera_array):
-            cam.Attach(tlFactory.CreateDevice(devices[i]))
-            print("Camera ", i, "- Using device ", cam.GetDeviceInfo().GetModelName())  # Print camera model number
+            # Create an array of instant cameras for the found devices and avoid exceeding a maximum number of devices.
+            instant_camera_array = pylon.InstantCameraArray(min(len(devices), 2))
+            self.all_cams = instant_camera_array
 
-            cam.Open()
-            # 1st camera will be a (ASCII = 97 + 0 = 97), 2nd will be b (ASCII = 97 + 1 = 98) and so on.
-            pylon.FeaturePersistence.Load(config_files[chr(97 + i)], cam.GetNodeMap())
-            cameras[chr(97 + i)] = cam
+            for i, cam in enumerate(instant_camera_array):
+                cam.Attach(tlFactory.CreateDevice(devices[i]))
+                print("Camera ", i, "- Using device ", cam.GetDeviceInfo().GetModelName())  # Print camera model number
 
-            if i == 0:
-                self.cam_a = cam
-            if i == 1:
-                self.cam_b = cam
+                cam.Open()
+                # 1st camera will be a (ASCII = 97 + 0 = 97), 2nd will be b (ASCII = 97 + 1 = 98) and so on.
+                pylon.FeaturePersistence.Load(config_files[chr(97 + i)], cam.GetNodeMap())
+                cameras[chr(97 + i)] = cam
 
-        self.all_cams = instant_camera_array
+                if i == 0:
+                    self.cam_a = cam
+                if i == 1:
+                    self.cam_b = cam
+
+            self.all_cams = instant_camera_array
 
     def keep_streaming(self, one_by_one=False):
         if self.continuous:
             if cv2.waitKey(1) & 0xFF == ord(self.break_key):
+                return False
+            if self.test:
                 return False
             if not self.all_cams.IsGrabbing():
                 return False
@@ -229,7 +271,19 @@ class Stream:
         return (x_a, y_a), (x_b, y_b)
 
     def grab_frames(self, warp_matrix=None, s8=False):
-        if self.continuous:
+        if self.test:
+            # Grab cameras
+            grab_result_a = self.cam_a
+            grab_result_b = self.cam_b
+
+            # Get next image
+            # data_array1 = grab_result_a.flatten()
+            # data_array2 = grab_result_b.flatten()
+
+            # return the values from the images
+            return grab_result_a, grab_result_b
+
+        elif self.continuous:
             try:
                 timeout_ms = 3600000
                 grab_result_a = self.cam_a.RetrieveResult(timeout_ms, pylon.TimeoutHandling_ThrowException)
@@ -257,11 +311,16 @@ class Stream:
                 raise e
         if self.single_shot and (not self.continuous):
             try:
-                if not self.all_cams.IsGrabbing():
-                    self.all_cams.StartGrabbing()
-                timeout_ms = 120000
-                grab_result_a = self.cam_a.RetrieveResult(timeout_ms, pylon.TimeoutHandling_ThrowException)
-                grab_result_b = self.cam_b.RetrieveResult(timeout_ms, pylon.TimeoutHandling_ThrowException)
+                if self.test:
+                    timeout_ms = 120000
+                    grab_result_a = cv2.imread(self.current_frame_a)
+                    grab_result_b = cv2.imread(self.current_frame_b)
+                else:
+                    if not self.all_cams.IsGrabbing():
+                        self.all_cams.StartGrabbing()
+                    timeout_ms = 120000
+                    grab_result_a = self.cam_a.RetrieveResult(timeout_ms, pylon.TimeoutHandling_ThrowException)
+                    grab_result_b = self.cam_b.RetrieveResult(timeout_ms, pylon.TimeoutHandling_ThrowException)
 
                 if grab_result_a.GrabSucceeded() and grab_result_b.GrabSucceeded():
                     a, b = grab_result_a.GetArray(), grab_result_b.GetArray()
@@ -288,9 +347,6 @@ class Stream:
                 if self.all_cams.IsGrabbing():
                     self.all_cams.StopGrabbing()
 
-
-
-
     def grab_frames2(self, roi_a, roi_b, warp_matrix_2):
         if warp_matrix_2 is None:
             return roi_a, roi_b
@@ -299,14 +355,44 @@ class Stream:
         roi_b_double_prime = cv2.warpAffine(roi_b, warp_matrix_2, roi_shape, flags=cv2.WARP_INVERSE_MAP)
         return roi_a, roi_b_double_prime
 
-
     def show_16bit_representations(self, a_as_12bit, b_as_12bit, b_prime=False, show_centers=False):
-        a_as_16bit, b_as_16bit = bdc.to_16_bit(a_as_12bit), bdc.to_16_bit(b_as_12bit)
+        # convert to 16 bit images
+        if self.test:
+            a_as_16bit, b_as_16bit = bdc.to_16_bit(a_as_12bit, original_bit_depth=16), bdc.to_16_bit(b_as_12bit, original_bit_depth=16)
+        else:
+            a_as_16bit, b_as_16bit = bdc.to_16_bit(a_as_12bit), bdc.to_16_bit(b_as_12bit)
 
         if not show_centers:
             if not b_prime:
-                cv2.imshow("Cam A", a_as_16bit)
-                cv2.imshow("Cam B", b_as_16bit)
+                if self.test:
+                    for image_a in self.cam_a:
+                        # display image
+                        im1 = cv2.imread(image_a)
+                        cv2.imshow("Image", im1)
+                        k = cv2.waitKey(0)
+
+                        # If the 'q' key is pressed, quit the loop
+                        if k == ord('q'):
+                            break
+
+                        # close window
+                        cv2.destroyAllWindows()
+
+                    for image_b in self.cam_b:
+                        # display image
+                        im2 = cv2.imread(image_b)
+                        cv2.imshow("Image", im2)
+                        k = cv2.waitKey(0)
+
+                        # If the 'q' key is pressed, quit the loop
+                        if k == ord('q'):
+                            break
+
+                        # close window
+                        cv2.destroyAllWindows()
+                else:
+                    cv2.imshow("Cam A", a_as_16bit)
+                    cv2.imshow("Cam B", b_as_16bit)
             else:
                 cv2.imshow("A", a_as_16bit)
                 cv2.imshow("B Prime", b_as_16bit)
@@ -319,7 +405,6 @@ class Stream:
             else:
                 cv2.imshow("A", a)
                 cv2.imshow("B Prime", b)
-
 
     def imgs_w_centers(self, a_16bit_color, center_a, b_16bit_color, center_b):
         img_a = cv2.circle(a_16bit_color, center_a, 10, (0, eight_bit_max, 0), 2)
@@ -351,7 +436,6 @@ class Stream:
     def show_frame_by_frame(self):
         pass
 
-
     def pre_alignment(self, histogram=False, centers=False, roi_borders=False, crop=False):
         a, b = self.current_frame_a, self.current_frame_b
 
@@ -380,32 +464,97 @@ class Stream:
             else:
                 self.show_16bit_representations(a, b, False, centers)
 
-    def start(self, config_files, histogram=False):
+    def start(self, config_files, config_folder, test, reason, args, histogram=False):
+        # update test
+        self.test = test
+
+        # update reason
+        self.reason = reason
+
+        # copies args into other files for use in steps
+        self.args = args
+
+        # verbose description
+        if self.args.verbose:
+            print("This is the stream.\n"
+                  "This is used as a wrapper to hold the data as the user goes through the steps of\n"
+                  "this program. At the end of each step, the parameter data will be stored here as\n"
+                  "well as saved to config.ini inside of the premade data folders.")
+
         print("self.continuous: ", self.continuous)
         print("self.single_shot: ", self.single_shot)
 
+        if self.test:
+            # get a test image
+            images1 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_a_frames/*.png')
+            images2 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_b_frames/*.png')
 
-        tlFactory = pylon.TlFactory.GetInstance()
-        devices = tlFactory.EnumerateDevices()
-        if len(devices) == 0:
-            raise Exception("No camera present.")
+            # prep the windows
+            cv2.namedWindow('Image1', cv2.WINDOW_NORMAL)
+            cv2.namedWindow('Image2', cv2.WINDOW_NORMAL)
 
-        self.all_cams = pylon.InstantCameraArray(2)
-        self.cam_a, self.cam_b = self.all_cams[0], self.all_cams[1]
-        for i, camera in enumerate(self.all_cams):
-            camera.Attach(tlFactory.CreateDevice(devices[i]))
-            camera.Open()
-            pylon.FeaturePersistence.Load(config_files[chr(97 + i)], camera.GetNodeMap())
+            # updates the camera parameters
+            self.cam_a, self.cam_b = images1, images2
 
-        # Starts grabbing for all cameras
-        if self.continuous:
-            self.all_cams.StartGrabbing(pylon.GrabStrategy_LatestImageOnly, pylon.GrabLoop_ProvidedByUser)
+            # go through the test stream
+            for image in images1:
+                img1 = cv2.imread(image)
+                self.current_frame_a = image
+
+                # Display the frame
+                cv2.imshow('Image1', img1)
+
+                # Wait for a key press
+                k = cv2.waitKey(0)
+
+                # If the 'q' key is pressed, quit the loop
+                if k == ord('q'):
+                    break
+            for image in images2:
+                img2 = cv2.imread(image)
+                self.current_frame_b = image
+
+                # Display the frame
+                cv2.imshow('Image2', img2)
+
+                # Wait for a key press
+                k = cv2.waitKey(0)
+
+                # If the 'q' key is pressed, quit the loop
+                if k == ord('q'):
+                    break
+
+            devices = [images1, images2]
+            self.all_cams = devices
+
+            # Close all windows
+            cv2.destroyAllWindows()
+        else:
+            tlFactory = pylon.TlFactory.GetInstance()
+            devices = tlFactory.EnumerateDevices()
+            if len(devices) == 0:
+                raise Exception("No camera present.")
+
+            self.all_cams = pylon.InstantCameraArray(2)
+            self.cam_a, self.cam_b = self.all_cams[0], self.all_cams[1]
+            for i, camera in enumerate(self.all_cams):
+                camera.Attach(tlFactory.CreateDevice(devices[i]))
+                camera.Open()
+                pylon.FeaturePersistence.Load(config_files[chr(97 + i)], camera.GetNodeMap())
+
+            # Starts grabbing for all cameras
+            if self.continuous:
+                self.all_cams.StartGrabbing(pylon.GrabStrategy_LatestImageOnly, pylon.GrabLoop_ProvidedByUser)
 
         calibration_success = False
         continue_stream = False
         cwd = os.getcwd()
         run_folder = os.path.join(cwd + "\\"+self.current_run)
         self.prv_run_dir = fpr.get_latest_run_direc(path_override=True, path_to_exclude=self.current_run)
+
+        # save to config
+        self.c_folder = config_folder
+        self.save_config()
 
         while calibration_success is not True:
             try:
@@ -443,17 +592,12 @@ class Stream:
 
             except Exception as e:
                 print("Exception occurred somewhere along the script")
-                self.tkapp.destroy()
+                # self.tkapp.destroy()
                 #tk_app.attempt_to_quit(self.tkapp)
                 raise e
-                """
-                retry_calibration = uiv.yes_no_quit(sd.RETRY_CALIBRATION.value)
-                if retry_calibration is not True:
-                    print("Okay: Exiting program.")
-                    sys.exit(0)
-                """
             finally:
                 pass
+
 
         figs, histograms, lines = hgs.initialize_histograms_rois()
         figs_alg, histograms_alg, lines_alg = hgs.initialize_histograms_algebra()

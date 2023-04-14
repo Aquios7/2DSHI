@@ -9,18 +9,20 @@ from constants import STEP_DESCRIPTIONS as sd
 
 
 def step_two(stream, continue_stream, autoload_prev_wm1=False):
-    """
-    Finds or imports initial co-registration matrix. For details see links below
-        https://mathworld.wolfram.com/AffineTransformation.html
-        https://math.stackexchange.com/questions/13150/extracting-rotation-scale-values-from-2d-transformation-matrix
-
-    Args:
-        stream (Stream): An instance of the Stream class currently connected to cameras.
-        continue_stream (bool): TODO: Check if this is needed as a parameter, or can exist within s2
-
-    Returns:
-        bool: The return value. True for success, False otherwise.
-    """
+    if stream.args.verbose:
+        print("""
+        Step 2
+        This step finds or imports initial co-registration matrix. For details see links below
+            https://mathworld.wolfram.com/AffineTransformation.html
+            https://math.stackexchange.com/questions/13150/extracting-rotation-scale-values-from-2d-transformation-matrix
+    
+        Args:
+            stream (Stream): An instance of the Stream class currently connected to cameras.
+            continue_stream (bool): TODO: Check if this is needed as a parameter, or can exist within s2
+    
+        Returns:
+            bool: The return value. True for success, False otherwise.
+        """)
 
     # ((translationx, translationy), rotation, (scalex, scaley), shear)
 
@@ -31,14 +33,16 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     if prev_wp1_exist and autoload_prev_wm1:
         stream.warp_matrix = np.load(prev_wp1_path)
         cv2.destroyAllWindows()
+        stream.save_config()
         return
 
-    coregister_ = "n"  # TODO MAKE THIS A BOOLEAN BY DEFAULT, FIGURE OUT IF DEFAULT SHOULD BE TRUE OR FALSE
+    coregister_ = False
 
     if prev_wp1_exist:
         step_description = sd.S02_DESC_PREV_WARP_MATRIX.value
         #step_description = "Step 2 - You created a Warp Matrix 1 last run. Would you like to use it?"
-        use_last_wp1 = uiv.yes_no_quit(step_description)
+        use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
+        # creating warp matrix
         if use_last_wp1 is True:
             stream.warp_matrix = np.load(prev_wp1_path)
             stream.warp_matrix = stream.warp_matrix.copy()
@@ -133,10 +137,18 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     while continue_stream:
         stream.frame_count += 1
         stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
-        a_as_16bit = bdc.to_16_bit(stream.current_frame_a)
-        b_as_16bit = bdc.to_16_bit(stream.current_frame_b)
+        # setting up the images for test
+        if stream.test:
+            a_as_16bit = cv2.imread(stream.current_frame_a[0])
+            b_as_16bit = cv2.imread(stream.current_frame_b[0])
+        # actual run
+        else:
+            a_as_16bit = bdc.to_16_bit(stream.current_frame_a)
+            b_as_16bit = bdc.to_16_bit(stream.current_frame_b)
+
         cv2.imshow("A", a_as_16bit)
         cv2.imshow("B Prime", b_as_16bit)
         continue_stream = stream.keep_streaming()
 
     cv2.destroyAllWindows()
+    stream.save_config()

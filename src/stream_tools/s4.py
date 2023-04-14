@@ -59,6 +59,7 @@ def step_four(stream, continue_stream, autoload_roi=False):
             stream.max_n_sigma = pickle.load(fp)
 
         cv2.destroyAllWindows()
+        stream.save_config()
         return
 
     max_n_sigma = 0
@@ -167,3 +168,4 @@ def step_four(stream, continue_stream, autoload_roi=False):
         #print("max_n_sigma: ", n_sigmas_to_attempt[last_successful_index])
         stream.max_n_sigma = n_sigmas_to_attempt[last_successful_index]
     cv2.destroyAllWindows()
+    stream.save_config()

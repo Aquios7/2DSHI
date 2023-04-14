@@ -3,6 +3,8 @@ from tkinter import filedialog
 
 # directory used for saving runs
 f_directory = ''
+test = False
+reason = ''
 
 # updates data folder being used in run
 def handle_button_click(label):
@@ -15,19 +17,24 @@ def handle_button_click(label):
 
 # switches run to test run and back
 def handle_button2_click(label2):
-    print("Data folder button clicked.")
+    global test
+    print("Test toggle button clicked.")
     # swap on/off
-    if label2.cget('text') == 'off':
+    if not test:
         label2.config(text='on')
         label2.update()
+        test = True
     else:
         label2.config(text='off')
         label2.update()
+        test = False
 
 # button to begin the run
-def close_window(root, label):
+def close_window(root, label, selected_option):
+    global reason
     if label.cget('text') == '':
         popup_noPath()
+    reason = selected_option.get()
     root.destroy()
 
 # a check for missing path
@@ -54,6 +61,7 @@ def popup_noPath():
 # This window should be used for setup of the initial runs
 def begin_startup(c_directory):
     global f_directory
+    global test
     # Create a Tkinter root window
     root = tk.Tk()
 
@@ -65,6 +73,18 @@ def begin_startup(c_directory):
 
     # Set the window size
     root.geometry("600x300")
+
+    # Create a list of options for the dropdown menu
+    options = ["Calibrate Laser", "Take Shots", "Create Matrices"]
+
+    # Create a variable to hold the selected option
+    selected_option = tk.StringVar()
+
+    # Set the initial value of the variable
+    selected_option.set(options[0])
+
+    # Create the dropdown menu
+    dropdown_menu = tk.OptionMenu(root, selected_option, *options)
 
     # Add a label to the window
     # label: shows current data folder
@@ -81,15 +101,16 @@ def begin_startup(c_directory):
     button2 = tk.Button(root, text="Test Run", command=lambda: handle_button2_click(label2))
 
     # button3: continue run
-    button3 = tk.Button(root, text="Begin Run", command=lambda: close_window(root, label))
+    button3 = tk.Button(root, text="Begin Run", command=lambda: close_window(root, label, selected_option))
 
-    # set the grid for the buttons and labels
+    # set the grid for the buttons, labels, dropdowns
     button.grid(row=0, column=0, padx=5, pady=5)
     button2.grid(row=1, column=0, padx=5, pady=5)
     button3.grid(row=2, column=2, padx=10, pady=10)
     label.grid(row=0, column=1, padx=5, pady=5)
     label2.grid(row=1, column=1, padx=5, pady=5)
+    dropdown_menu.grid(row=1, column=2, padx=10, pady=10)
 
     # Run the main event loop
     root.mainloop()
-    return f_directory
+    return f_directory, test, reason

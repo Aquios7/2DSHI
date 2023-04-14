@@ -22,79 +22,85 @@ from gui import startupGUI
 # Create an instance of an ArgumentParser Object
 parser = argparse.ArgumentParser()
 
+# allow for '-v' and '--verbose'
+parser.add_argument('-v', '--verbose', action='store_true',
+                    help='Verbose output')
 
+# activate the arguments passed
+args = parser.parse_args()
+
+# hyperlink used in the verbose description
+hyperlink_format = '<a href="{link}">{text}</a>'
+link_text = hyperlink_format.format
+
+# begin the program from here
 if __name__ == "__main__":
-    args = None
+    # verbose Description
+    if args.verbose:
+        print("This is a program used in conjunction with the 2D Second Harmonic Dispersion Interferometer\n"
+              "Each step will have a description of the process as the program goes through the 7 steps of "
+              "calculation\n"
+              "For any questions on the program, please contact https://www.l-egantsolutions.com/contact-indigo")
+
+    # args = None
     # run_mode = uiv.determine_run_mode(sys.argv[:])
     current_directory = os.getcwd()
 
     # run a pre-start GUI asking for specifics before the main run
-    current_directory = startupGUI.begin_startup(current_directory)
+    current_directory, test, reason = startupGUI.begin_startup(current_directory)
+    print(reason)
 
-
-    # if run_mode == 1:  # Apply the parameters for the previous run, exactly.
-    #     prev_run = find_previous_run.get_latest_run()
-    #     uiv.display_dict_values(prev_run)
-    #     args = prev_run
-    #
-    # if run_mode == 2:  # Apply the parameters specified in the command line, exactly.
-    #     parser = get_command_line_parameters.initialize_arg_parser()
-    #     args = vars(parser.parse_args())  # Parse user arguments into a dictionary)
-    #     uiv.display_dict_values(args)
-    #
-    # if run_mode == 3:  # Apply last runs parameters, but with some modifications you'll specify.
-    #     prev_run = find_previous_run.get_latest_run()
-    #     uiv.display_dict_values(prev_run)
-    #     args = uiv.update_previous_params(prev_run)
-
-    current_datetime = datetime.now().strftime("%Y_%m_%d__%H_%M")
+    # check for current directory
+    if test:
+        current_datetime = 'test-' + datetime.now().strftime("%Y_%m_%d/")
+        current_time = datetime.now().strftime("%H_%M")
+    else:
+        current_datetime = datetime.now().strftime("%Y_%m_%d/")
+        current_time = datetime.now().strftime("%H_%M")
     current_direc = current_directory
     run_directory = ''
+    run_directory2 = ''
     run_directory = os.path.join(run_directory, current_direc, current_datetime)
+    run_directory2 = os.path.join(run_directory2, run_directory, current_time)
 
+    # create a directory for the current run
     if not os.path.exists(run_directory):
         os.mkdir(run_directory)
-        os.mkdir(os.path.join(run_directory, "cam_a_frames"))
-        os.mkdir(os.path.join(run_directory, "cam_b_frames"))
+    if not os.path.exists(run_directory2):
+        os.mkdir(run_directory2)
+        os.mkdir(os.path.join(run_directory2, "cam_a_frames"))
+        os.mkdir(os.path.join(run_directory2, "cam_b_frames"))
+        os.mkdir(os.path.join(run_directory2, "config"))
 
-    wptf.document_run(args, current_datetime)
-
+    # updates for the terminal
     print("\nAll Experimental Data will be saved in the following directory:\n\tD:\\{}\n".format(current_datetime))
     print("\nStarting Run: {}\n".format(current_datetime))
 
+    # configuration parameters created
     config_file_parameters = ["ExposureTime", "AcquisitionFrameRate"]
-    parameter_dictionary = ucc.reduce_dictionary(args, config_file_parameters)
 
+    # camera config folder path created
     camera_configurations_folder = os.path.join(os.getcwd(), "camera_configuration_files")
+
+    # overall config folder parameter created
+    config_folder = os.path.join(run_directory2, "config/")
+
     # Prepare Camera Configuration Files
-    config_files_by_cam = cam_setup.assign_config_files(parameter_dictionary, args, camera_configurations_folder)
+    config_files_by_cam = cam_setup.assign_config_files(camera_configurations_folder)
 
-    stream = stream_tools.Stream(fb=args["FrameBreak"], save_imgs=args["SaveImages"])  # Create a Stream() Instance
+    # Create a Stream() Instance
+    stream = stream_tools.Stream()
     stream.set_current_run(current_datetime)
-    #stream.get_cameras(config_files_by_cam)  # Get Basler Cameras, and load corresponding camera configuration files
 
+    # find the last point that a previous run ended at
     highest_jump_level = find_previous_run.get_highest_jump_level(stream)
     stream.offer_to_jump(highest_jump_level)
 
-    stream.start(config_files_by_cam, histogram=args["DisplayHistocam"])  # Start steam (Display Histogram if user specified so in input)
+    # Start steam (Display Histogram if user specified so in input)
+    stream.start(config_files_by_cam, config_folder, test, reason, args)
 
+    # terminal message for end of stream
     print("Stream has ended.")
-
-    if args["SaveImages"]:
-        a_frames_dir = os.path.join(run_directory, "cam_a_frames")
-        b_frames_dir = os.path.join(run_directory, "cam_b_frames")
-
-        print("Saving 12 bit frames as 16 bit png files.")
-        a_frames = stream.get_12bit_a_frames()
-        b_frames = stream.get_12bit_b_frames()
-
-        for i in range(len(a_frames)):
-            a16 = bdc.to_16_bit(a_frames[i])
-            im.save_img("a_{}.png".format(i + 1), a_frames_dir, a16)
-
-        for j in range(len(b_frames)):
-            b16 = bdc.to_16_bit(b_frames[j])
-            im.save_img("b_{}.png".format(j + 1), b_frames_dir, b16)
 
     os.chdir(run_directory)
     if stream.get_warp_matrix() is not None and stream.get_warp_matrix2() is not None:

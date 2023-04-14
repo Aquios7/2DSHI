@@ -62,7 +62,7 @@ def get_latest_run():
                                         ".tmp.drivedownload",
                                         "Recovery"
                                         "WindowsImageBackup"]])
-    print(all_runs)
+    # print(all_runs)
     all_params_dict = dict()
 
     if len(all_runs) < 1:

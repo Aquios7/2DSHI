@@ -1,21 +1,31 @@
 import cv2
-from stream_tools.curveDigitizer import run as runCurve
-from experiment_set_up import user_input_validation as uiv
-from constants import STEP_DESCRIPTIONS as sd
+# Windows OS
+# from stream_tools.curveDigitizer import run as runCurve
+# from experiment_set_up import user_input_validation as uiv
+# from constants import STEP_DESCRIPTIONS as sd
+# Linux OS
+from src.stream_tools.curveDigitizer import run as runCurve
+from src.experiment_set_up import user_input_validation as uiv
+from src.constants import STEP_DESCRIPTIONS as sd
 
 def step_one(stream, histogram, continue_stream):
-    """
-    This step streams the raw camera feed.
+    if stream.args.verbose:
+        print("""
+        Step 1
+        This step streams the raw camera feed.
+    
+        Args:
+            stream (Stream): An instance of the Stream Class
+            histogram (bool): True if you'd like to display histograms for pixel values, false otherwise.
+            continue_stream (bool): True to continue streaming camera feeds, false otherwise
+    
+        Returns:
+            bool: The return value. True for success, False otherwise.
+    
+        """)
 
-    Args:
-        stream (Stream): An instance of the Stream Class
-        histogram (bool): True if you'd like to display histograms for pixel values, false otherwise.
-        continue_stream (bool): True to continue streaming camera feeds, false otherwise
-
-    Returns:
-        bool: The return value. True for success, False otherwise.
-    """
     step_description = sd.S01_DESC.value
+
     #step_description = "Step 1 - Stream Raw Camera Feed"
     start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.
     display_stream = True if start is True else False
@@ -39,6 +49,10 @@ def step_one(stream, histogram, continue_stream):
 
     cv2.destroyAllWindows()  # Upon leaving stream, we want to close any CV2 windows.
 
+    # save to config
+    stream.save_config()
+
     # testing the curve digitizer
-    coordsListA, coordsListB = runCurve(stream)
+    if not stream.test:
+        coordsListA, coordsListB = runCurve(stream)
 

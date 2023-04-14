@@ -34,6 +34,7 @@ def step_three(stream, autoload_prev_static_centers=False):
             stream.static_center_b = pickle.load(fp)
 
         cv2.destroyAllWindows()
+        stream.save_config()
         return
 
 
@@ -167,3 +168,5 @@ def step_three(stream, autoload_prev_static_centers=False):
     #print("stream.static_center_a", stream.static_center_a)
     #print("stream.static_center_b", stream.static_center_b)
     cv2.destroyAllWindows()
+
+    stream.save_config()

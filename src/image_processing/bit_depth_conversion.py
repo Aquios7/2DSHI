@@ -11,6 +11,8 @@ def to_16_bit(image_array, original_bit_depth=12):
     Returns:
         numpy.ndarray: The same image represented
     """
+    if original_bit_depth == 16:
+        return image_array
     if original_bit_depth < 16:
         return np.array(image_array * 2**(16-original_bit_depth), dtype=np.uint16).astype(np.uint16)
     else:
