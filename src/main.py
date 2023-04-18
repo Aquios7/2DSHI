@@ -97,7 +97,7 @@ if __name__ == "__main__":
     stream.offer_to_jump(highest_jump_level)
 
     # Start steam (Display Histogram if user specified so in input)
-    stream.start(config_files_by_cam, config_folder, test, reason, args)
+    stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2)
 
     # terminal message for end of stream
     print("Stream has ended.")

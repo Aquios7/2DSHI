@@ -3,6 +3,7 @@ from pypylon import pylon  # Import relevant pypylon packages/modules
 import cv2
 import os, sys
 import glob
+import natsort
 import configparser
 from . import App as tk_app
 from . import histograms as hgs
@@ -32,6 +33,7 @@ class Stream:
         self.c_folder = None
         self.config = 'config.ini'
         self.args = None
+        self.test_dir = '~/test-data/'
 
         self.continuous = True
         self.single_shot = False if self.continuous else True
@@ -273,8 +275,8 @@ class Stream:
     def grab_frames(self, warp_matrix=None, s8=False):
         if self.test:
             # Grab cameras
-            grab_result_a = self.cam_a
-            grab_result_b = self.cam_b
+            grab_result_a = self.cam_a[self.frame_count]
+            grab_result_b = self.cam_b[self.frame_count]
 
             # Get next image
             # data_array1 = grab_result_a.flatten()
@@ -464,7 +466,7 @@ class Stream:
             else:
                 self.show_16bit_representations(a, b, False, centers)
 
-    def start(self, config_files, config_folder, test, reason, args, histogram=False):
+    def start(self, config_files, config_folder, test, reason, args, run_directory2, histogram=False):
         # update test
         self.test = test
 
@@ -488,6 +490,8 @@ class Stream:
             # get a test image
             images1 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_a_frames/*.png')
             images2 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_b_frames/*.png')
+            images1 = natsort.natsorted(images1)
+            images2 = natsort.natsorted(images2)
 
             # prep the windows
             cv2.namedWindow('Image1', cv2.WINDOW_NORMAL)
@@ -549,7 +553,8 @@ class Stream:
         calibration_success = False
         continue_stream = False
         cwd = os.getcwd()
-        run_folder = os.path.join(cwd + "\\"+self.current_run)
+        run_folder = os.path.join(run_directory2)
+        self.current_run = run_directory2
         self.prv_run_dir = fpr.get_latest_run_direc(path_override=True, path_to_exclude=self.current_run)
 
         # save to config

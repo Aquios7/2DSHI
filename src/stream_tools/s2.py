@@ -26,8 +26,13 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
 
     # ((translationx, translationy), rotation, (scalex, scaley), shear)
 
-    previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
-    prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
+    # point warp matrix at test folder
+    if stream.test:
+        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.test_dir)
+        prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
+    else:
+        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
     prev_wp1_exist = os.path.exists(prev_wp1_path)
 
     if prev_wp1_exist and autoload_prev_wm1:
@@ -139,8 +144,8 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
         stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
         # setting up the images for test
         if stream.test:
-            a_as_16bit = cv2.imread(stream.current_frame_a[0])
-            b_as_16bit = cv2.imread(stream.current_frame_b[0])
+            a_as_16bit = cv2.imread(stream.current_frame_a)
+            b_as_16bit = cv2.imread(stream.current_frame_b)
         # actual run
         else:
             a_as_16bit = bdc.to_16_bit(stream.current_frame_a)
