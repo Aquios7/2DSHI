@@ -13,29 +13,34 @@ cam_frame_height_pixels = 1200
 cam_frame_width_pixels = 1920
 
 def step_four(stream, continue_stream, autoload_roi=False):
-    """
-    This step finds the Regions of interest of both images.
-    The Regions of Interest are comprised of:
-        Sigma_X: Standard deviation of beam's gaussian profile in the horizontal direction
-        Sigma_Y: Standard deviation of beam's gaussian profile in the vertical direction
-        Static Center A: The coordinates of the Gaussian Peak for Camera A
-        Static Center B: The coordinates of the Gaussian Peak for Camera B
+    if stream.args.verbose:
+        print("""
+        Step 4
+        This step finds the Regions of interest of both images.
+        The Regions of Interest are comprised of:
+            Sigma_X: Standard deviation of beam's gaussian profile in the horizontal direction
+            Sigma_Y: Standard deviation of beam's gaussian profile in the vertical direction
+            Static Center A: The coordinates of the Gaussian Peak for Camera A
+            Static Center B: The coordinates of the Gaussian Peak for Camera B
+    
+             _ _ _ _ _ _ _ _ _
+            |                 |
+            |                 |
+            |    (x_a,y_a)    | 2*sigma_y
+            |                 |
+            |                 |
+             _ _ _ _ _ _ _ _ _
+                 2*sigma_x
+    
+        Args:
+            stream (Stream): Instance of stream class currently connected to cameras
+            continue_stream (bool): Should camera keep streaming. TODO: CHECK IF THIS CAN JUST EXIST IN S5 NAMESPACE
 
-         _ _ _ _ _ _ _ _ _
-        |                 |
-        |                 |
-        |    (x_a,y_a)    | 2*sigma_y
-        |                 |
-        |                 |
-         _ _ _ _ _ _ _ _ _
-             2*sigma_x
-
-    Args:
-        stream (Stream): Instance of stream class currently connected to cameras
-        continue_stream (bool): Should camera keep streaming. TODO: CHECK IF THIS CAN JUST EXIST IN S5 NAMESPACE
-
-    """
+        """)
+    if stream.test:
+        previous_run_directory = stream.test_dir
     previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+    autoload_roi = True
     # print(previous_run_directory)
 
     prev_sigma_x_path = os.path.join(previous_run_directory, "static_sigma_x.p")

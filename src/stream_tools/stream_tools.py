@@ -5,6 +5,7 @@ import os, sys
 import glob
 import natsort
 import configparser
+import time
 from . import App as tk_app
 from . import histograms as hgs
 from . import s1, s2, s3, s4, s5, s6, s7, s8, s9
@@ -127,6 +128,10 @@ class Stream:
             if key in config['DEFAULT']:
                 setattr(self, key, eval(config['DEFAULT'][key]))
 
+    # switching test depending on the GUI
+    def set_test(self, test):
+        self.test = test
+
     def get_12bit_a_frames(self):
         return self.a_frames
 
@@ -173,7 +178,10 @@ class Stream:
         self.warp_matrix_2 = w
 
     def offer_to_jump(self, highest_possible_jump):
-        offer = uiv.yes_no_quit(sd.OFFER_TO_JUMP.value)
+        if self.test:
+            offer = 'n'
+        else:
+            offer = uiv.yes_no_quit(sd.OFFER_TO_JUMP.value)
         level_descriptions = {
             1: sd.S01_DESC.value,
             2: sd.S02_DESC_NO_PREV_WARP_MATRIX.value,
@@ -447,6 +455,7 @@ class Stream:
 
             if self.static_center_a is None or self.static_center_b is None:
                 ca, cb = self.find_centers(a_as_16bit, b_as_16bit)
+                set_static_centers(ca, cb)
                 a = self.full_img_w_roi_borders(a, ca)
                 b = self.full_img_w_roi_borders(b, cb)
             else:
@@ -466,7 +475,7 @@ class Stream:
             else:
                 self.show_16bit_representations(a, b, False, centers)
 
-    def start(self, config_files, config_folder, test, reason, args, run_directory2, histogram=False):
+    def start(self, config_files, config_folder, test, reason, args, run_directory2, current_direc, histogram=False):
         # update test
         self.test = test
 
@@ -475,6 +484,9 @@ class Stream:
 
         # copies args into other files for use in steps
         self.args = args
+
+        # sets the test directory being used
+        self.test_dir = current_direc + '/test-data'
 
         # verbose description
         if self.args.verbose:
@@ -607,6 +619,7 @@ class Stream:
         figs, histograms, lines = hgs.initialize_histograms_rois()
         figs_alg, histograms_alg, lines_alg = hgs.initialize_histograms_algebra()
         figs_r, histograms_r, lines_r = hgs.initialize_histograms_r()
+        time.sleep(1)
 
         step = 6
 

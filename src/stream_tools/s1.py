@@ -27,7 +27,10 @@ def step_one(stream, histogram, continue_stream):
     step_description = sd.S01_DESC.value
 
     #step_description = "Step 1 - Stream Raw Camera Feed"
-    start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.
+    if stream.test:
+        start = 'n'
+    else:
+        start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.
     display_stream = True if start is True else False
 
     if (stream.histocam_a is None or stream.histocam_b is None) and histogram:  # If use wants to display Histograms

@@ -30,6 +30,7 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     if stream.test:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.test_dir)
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
+        autoload_prev_wm1 = True
     else:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
@@ -46,7 +47,10 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     if prev_wp1_exist:
         step_description = sd.S02_DESC_PREV_WARP_MATRIX.value
         #step_description = "Step 2 - You created a Warp Matrix 1 last run. Would you like to use it?"
-        use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
+        if stream.test:
+            use_last_wp1 = 'y'
+        else:
+            use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
         # creating warp matrix
         if use_last_wp1 is True:
             stream.warp_matrix = np.load(prev_wp1_path)

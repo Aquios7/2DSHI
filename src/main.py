@@ -91,13 +91,14 @@ if __name__ == "__main__":
     # Create a Stream() Instance
     stream = stream_tools.Stream()
     stream.set_current_run(current_datetime)
+    stream.set_test(test)
 
     # find the last point that a previous run ended at
     highest_jump_level = find_previous_run.get_highest_jump_level(stream)
     stream.offer_to_jump(highest_jump_level)
 
     # Start steam (Display Histogram if user specified so in input)
-    stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2)
+    stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2, current_direc)
 
     # terminal message for end of stream
     print("Stream has ended.")

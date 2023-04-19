@@ -58,8 +58,11 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
 
     last_frame = False
 
-    desc = sd.S06_DESC.value
-    continue_stream = uiv.yes_no_quit(desc)
+    if stream.test:
+        continue_stream = False
+    else:
+        desc = sd.S06_DESC.value
+        continue_stream = uiv.yes_no_quit(desc)
     s7_frame_count = 1
     frames_we_went_through = 0
     r_subsection_pixel_vals = None

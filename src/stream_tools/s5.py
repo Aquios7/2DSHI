@@ -9,15 +9,20 @@ from experiment_set_up import user_input_validation as uiv
 from constants import STEP_DESCRIPTIONS as sd
 
 def load_wm2_if_present(stream):
-    """
-    If a second Warp Matrix was created during the previous run, this function may be used to call and load it into the
-    current run.
+    if stream.args.verbose:
+        print("""
+        Pre-step 5 check
+        If a second Warp Matrix was created during the previous run, this function may be used to call and load it into the
+        current run.
+    
+        Args:
+            stream (Stream): Instance of a Stream object currently connected to cameras A and B.
 
-    Args:
-        stream (Stream): Instance of a Stream object currently connected to cameras A and B.
-
-    """
-    previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        """)
+    if stream.test:
+        previous_run_directory = stream.test_dir
+    else:
+        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
 
     prev_wp2_path = os.path.join(previous_run_directory, "wm1.npy")
     prev_wp2_exist = os.path.exists(prev_wp2_path)
@@ -34,8 +39,11 @@ def step_five(stream, continue_stream):
     that fall inside our regions of interest.
 
     """
-    desc = sd.S05_DESC.value
-    close_in = uiv.yes_no_quit(desc)
+    if stream.test:
+        close_in = False
+    else:
+        desc = sd.S05_DESC.value
+        close_in = uiv.yes_no_quit(desc)
 
     if close_in is True:
         continue_stream = True
@@ -67,14 +75,19 @@ def step_five(stream, continue_stream):
 
 
 def step_six_b(stream, continue_stream, app):
-    """
-    Now our images are much smaller (Started at 800x1200 pixels and are now down to maybe 300x300 depending on beam
-    intensity), we might be able to get a better co-registration by searching for a new Euclidean Transform. At this
-    step, user will have a choice whether or not they want a second warp matrix or to proceed with just the initial.
-
-    """
-    desc = "Step 6B - Re-Coregister?"
-    find_rois_ = uiv.yes_no_quit(desc)
+    if stream.args.verbose:
+        print("""
+        Step 6b
+        Now our images are much smaller (Started at 800x1200 pixels and are now down to maybe 300x300 depending on beam
+        intensity), we might be able to get a better co-registration by searching for a new Euclidean Transform. At this
+        step, user will have a choice whether or not they want a second warp matrix or to proceed with just the initial.
+    
+        """)
+    if stream.test:
+        find_rois_ = False
+    else:
+        desc = "Step 6B - Re-Coregister?"
+        find_rois_ = uiv.yes_no_quit(desc)
 
     if find_rois_ is True:
         continue_stream = True
@@ -140,12 +153,17 @@ def step_six_b(stream, continue_stream, app):
     cv2.destroyAllWindows()
 
 def step_six_c(stream, continue_stream):
-    """
-    Here we may display the newly re-co-registered images
-
-    """
-    desc = "Step 6C - Display Re-Coregistered Images ?"
-    display_new = uiv.yes_no_quit(desc)
+    if stream.args.verbose:
+        print("""
+        Step 6c
+        Here we may display the newly re-co-registered images
+    
+        """)
+    if stream.test:
+        display_new = False
+    else:
+        desc = "Step 6C - Display Re-Coregistered Images ?"
+        display_new = uiv.yes_no_quit(desc)
 
     if display_new is True:
         continue_stream = True

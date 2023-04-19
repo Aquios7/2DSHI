@@ -18,7 +18,17 @@ y_n_msg = "Proceed? (y/n): "
 
 
 def step_three(stream, autoload_prev_static_centers=False):
-    previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+    if stream.args.verbose:
+        print("""
+        Step 3
+        This is where you will calculate the static center based on the brightest pixel.
+        Without the static center, teh region of interest will not be defined for the next steps, and the program will exit.
+        """)
+    if stream.test:
+        previous_run_directory = stream.test_dir
+        autoload_prev_static_centers = True
+    else:
+        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
 
     prev_sca_path = os.path.join(previous_run_directory, "static_center_a.p")
     prev_sca_exist = os.path.exists(prev_sca_path)
@@ -39,7 +49,10 @@ def step_three(stream, autoload_prev_static_centers=False):
 
 
     step_description = "S3 FREESTREAM GRIDLINES"
-    freestream_ = uiv.yes_no_quit(step_description)
+    if stream.test:
+        freestream_ = False
+    else:
+        freestream_ = uiv.yes_no_quit(step_description)
 
     if freestream_ is True:
         continue_stream = True
@@ -74,7 +87,10 @@ def step_three(stream, autoload_prev_static_centers=False):
 
 
     step_description = sd.S03_DESC.value
-    set_centers_ = uiv.yes_no_quit(step_description)
+    if stream.test:
+        set_centers_ = 'n'
+    else:
+        set_centers_ = uiv.yes_no_quit(step_description)
 
     if set_centers_ is True:
         continue_stream = True
