@@ -652,7 +652,12 @@ class Stream:
             s8.step_eight(self, self.start_writing_at, self.end_writing_at, run_folder, self.a_images, self.s8_full_a_frames,
                          self.b_prime_images, self.s8_full_b_frames, self.stats)
 
-        if self.all_cams.IsGrabbing():
+        if self.test:
+            print("test passed")
+            tk_app.attempt_to_quit(self.tkapp)
+            sys.exit(0)
+
+        elif self.all_cams.IsGrabbing():
             self.all_cams.StopGrabbing()
         s9.step_nine(run_folder)
         tk_app.attempt_to_quit(self.tkapp)

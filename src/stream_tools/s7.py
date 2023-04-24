@@ -29,8 +29,11 @@ def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg,
 
     last_frame = False
 
-    desc = sd.S07_DESC.value
-    record_r_matrices = uiv.yes_no_quit(desc)
+    if stream.test:
+        record_r_matrices = False
+    else:
+        desc = sd.S07_DESC.value
+        record_r_matrices = uiv.yes_no_quit(desc)
     s8_frame_count = 1
     r_subsection_pixel_vals = None
     satisfied_with_run = False

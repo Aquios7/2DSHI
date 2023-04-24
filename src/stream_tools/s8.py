@@ -8,8 +8,12 @@ from constants import STEP_DESCRIPTIONS as sd
 
 def step_eight(stream, start_writing_at, end_writing_at, run_folder, a_images, a_frames, b_prime_images, b_prime_frames,
               stats):
-    desc = sd.S08_DESC.value
-    write_to_csv = uiv.yes_no_quit(desc)
+
+    if stream.test:
+        write_to_csv = False
+    else:
+        desc = sd.S08_DESC.value
+        write_to_csv = uiv.yes_no_quit(desc)
 
     if write_to_csv is True:
         r_matrices = stream.r_frames
@@ -67,3 +71,6 @@ def step_eight(stream, start_writing_at, end_writing_at, run_folder, a_images, a
                 count += 1
                 stats_csvWriter.writerow([count, stats[i][1], stats[i][2]])
         print("\tMatrices and Matrix Stats have finished writing to file.")
+
+    else:
+        print("run ended with no data saved.")
