@@ -30,7 +30,7 @@ def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg,
     last_frame = False
 
     if stream.test:
-        record_r_matrices = False
+        record_r_matrices = True
     else:
         desc = sd.S07_DESC.value
         record_r_matrices = uiv.yes_no_quit(desc)

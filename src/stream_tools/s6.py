@@ -59,7 +59,7 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
     last_frame = False
 
     if stream.test:
-        continue_stream = False
+        continue_stream = True
     else:
         desc = sd.S06_DESC.value
         continue_stream = uiv.yes_no_quit(desc)
@@ -123,16 +123,29 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
         hist_img_b = cv2.resize(hist_img_b, (w, h), interpolation=cv2.INTER_AREA)
         hist_img_a = bdc.to_16_bit(cv2.resize(hist_img_a, (w, h), interpolation=cv2.INTER_AREA), 8)
         hist_img_b = bdc.to_16_bit(cv2.resize(hist_img_b, (w, h), interpolation=cv2.INTER_AREA), 8)
+        # if stream.test:
+        #     hist_img_a = cv2.cvtColor(hist_img_a, cv2.COLOR_RGB2GRAY)
+        #     hist_img_b = cv2.cvtColor(hist_img_b, cv2.COLOR_RGB2GRAY)
 
 
 
         roi_a_resized = cv2.resize(stream.roi_a, (w, h), interpolation=cv2.INTER_AREA)
         roi_b_resized = cv2.resize(stream.roi_b, (w, h), interpolation=cv2.INTER_AREA)
+        # if stream.test:
+            # roi_a_resized = cv2.cvtColor(roi_a_resized, cv2.COLOR_GRAY2BGR) * 16
+            # roi_b_resized = cv2.cvtColor(roi_b_resized, cv2.COLOR_GRAY2BGR) * 16
 
-        ROI_A_WITH_HISTOGRAM = np.concatenate(
-            (cv2.cvtColor(hist_img_a, cv2.COLOR_RGB2BGR), cv2.cvtColor(roi_a_resized * 16, cv2.COLOR_GRAY2BGR)), axis=1)
-        ROI_B_WITH_HISTOGRAM = np.concatenate(
-            (cv2.cvtColor(hist_img_b, cv2.COLOR_RGB2BGR), cv2.cvtColor(roi_b_resized * 16, cv2.COLOR_GRAY2BGR)), axis=1)
+        # invert colors on images
+        if stream.test:
+            ROI_A_WITH_HISTOGRAM = np.concatenate(
+                (hist_img_a, roi_a_resized * 16), axis=1)
+            ROI_B_WITH_HISTOGRAM = np.concatenate(
+                (hist_img_b, roi_b_resized * 16), axis=1)
+        else:
+            ROI_A_WITH_HISTOGRAM = np.concatenate(
+                (cv2.cvtColor(hist_img_a, cv2.COLOR_RGB2BGR), cv2.cvtColor(roi_a_resized * 16, cv2.COLOR_GRAY2BGR)), axis=1)
+            ROI_B_WITH_HISTOGRAM = np.concatenate(
+                (cv2.cvtColor(hist_img_b, cv2.COLOR_RGB2BGR), cv2.cvtColor(roi_b_resized * 16, cv2.COLOR_GRAY2BGR)), axis=1)
 
         A_ON_B = np.concatenate((ROI_A_WITH_HISTOGRAM, ROI_B_WITH_HISTOGRAM), axis=0)
 

@@ -160,7 +160,7 @@ def step_six_c(stream, continue_stream):
     
         """)
     if stream.test:
-        display_new = False
+        display_new = True
     else:
         desc = "Step 6C - Display Re-Coregistered Images ?"
         display_new = uiv.yes_no_quit(desc)

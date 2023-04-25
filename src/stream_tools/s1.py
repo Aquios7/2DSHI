@@ -4,9 +4,9 @@ import cv2
 # from experiment_set_up import user_input_validation as uiv
 # from constants import STEP_DESCRIPTIONS as sd
 # Linux OS
-from src.stream_tools.curveDigitizer import run as runCurve
-from src.experiment_set_up import user_input_validation as uiv
-from src.constants import STEP_DESCRIPTIONS as sd
+from stream_tools.curveDigitizer import run as runCurve
+from experiment_set_up import user_input_validation as uiv
+from constants import STEP_DESCRIPTIONS as sd
 
 def step_one(stream, histogram, continue_stream):
     if stream.args.verbose:

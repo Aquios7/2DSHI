@@ -283,15 +283,21 @@ class Stream:
     def grab_frames(self, warp_matrix=None, s8=False):
         if self.test:
             # Grab cameras
-            grab_result_a = self.cam_a[self.frame_count]
-            grab_result_b = self.cam_b[self.frame_count]
+            a = self.cam_a[self.frame_count]
+            b = self.cam_b[self.frame_count]
 
-            # Get next image
-            # data_array1 = grab_result_a.flatten()
-            # data_array2 = grab_result_b.flatten()
-
+            # check for warp matrix
+            if warp_matrix is None:
+                return a, b
+            else:
+                a = cv2.imread(a)
+                b = cv2.imread(b)
+                b1_shape = b.shape[1], b.shape[0]
+                b_prime = cv2.warpAffine(b, warp_matrix, b1_shape, flags=cv2.WARP_INVERSE_MAP)
+                self.b_prime_frames.append(b_prime)
+                return a, b_prime
             # return the values from the images
-            return grab_result_a, grab_result_b
+            return a, b
 
         elif self.continuous:
             try:
