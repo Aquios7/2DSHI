@@ -129,69 +129,69 @@ class MainApplication(tk.Frame):
         self.png_and_csv_text = tk.Label(self.parent, text="Generate first CSV and PNG")
         self.png_and_csv_text.grid(column=3, row=0, padx=5, pady=10, sticky="W")
 
-        self.gen_phi_csv_button = tk.Button(self.parent, text="Generate phi CSVs", anchor="w",
-                                                  command=self.gen_kvaphi_matrices)
-        self.gen_phi_csv_button.grid(column=3, row=1, padx=10, pady=1, sticky="W")
-
-        self.gen_phi_img_button = tk.Button(self.parent, text="Generate Phi IMGs", anchor="w",
-                                                  command=self.gen_imgs)
-        self.gen_phi_img_button.grid(column=3, row=2, padx=10, pady=5, sticky="W")
+        # self.gen_phi_csv_button = tk.Button(self.parent, text="Generate phi CSVs", anchor="w",
+        #                                           command=self.gen_kvaphi_matrices)
+        # self.gen_phi_csv_button.grid(column=3, row=1, padx=10, pady=1, sticky="W")
+        #
+        # self.gen_phi_img_button = tk.Button(self.parent, text="Generate Phi IMGs", anchor="w",
+        #                                           command=self.gen_imgs)
+        # self.gen_phi_img_button.grid(column=3, row=2, padx=10, pady=5, sticky="W")
         self.moving_average_label = tk.Label(self.parent, text="Moving average pixels")
-        self.moving_average_label.grid(column=3, row=3, padx=5, pady=3, sticky='W')
+        self.moving_average_label.grid(column=3, row=1, padx=5, pady=3, sticky='W')
         self.moving_average_entry = tk.Entry(self.parent)
-        self.moving_average_entry.grid(column=3, row=4, padx=5, pady=3, sticky='W')
+        self.moving_average_entry.grid(column=3, row=2, padx=5, pady=3, sticky='W')
         self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.moving_average)
-        self.run.grid(column=3, row=5, padx=5, pady=3, sticky='W')
+        self.run.grid(column=3, row=3, padx=5, pady=3, sticky='W')
 
         """Column 4: Line outs"""
 
-        self.pick_line_out_label = tk.Label(self.parent, text="Pick a line out type")
-        self.pick_line_out_label.grid(column=4, row=0, padx=5, pady=2, sticky="W")
-
-        self.line_out_option_var = tk.StringVar(self.parent)
-        self.line_out_option_var.set("Radial")  # default value
-        line_out_options = ["Radial", "Spiral", "Vertical/Horizontal"]
-        self.option_menu = tk.OptionMenu(self.parent, self.line_out_option_var, *line_out_options)
-        self.option_menu.grid(column=4, row=1, padx=5, pady=2, sticky="W")
-
-        self.chose_line_out_button = tk.Button(self.parent, text="Specify Line Out Parameters", anchor="w",
-                                               command=self.create_line_out_options)
-        self.chose_line_out_button.grid(column=4, row=2, padx=5, pady=2, sticky="W")
-
-        self.radial_entry_instructions = tk.Label(self.parent, text="Enter number of lines.")
-        self.radial_entry_instructions.grid(column=4, row=3, padx=5, pady=2, sticky="W")
-        self.radial_entry = tk.Entry(self.parent)
-        self.radial_entry.grid(column=4, row=4, padx=5, pady=2, sticky="W")
-
-        self.vertical_offset_label = tk.Label(self.parent, text="Set vertical offset")
-        self.vertical_offset_label.grid(column=4, row=5, padx=5, pady=3, sticky='W')
-        self.set_vertical_offset = tk.Entry(self.parent)
-        self.set_vertical_offset.grid(column=4, row=6, padx=5, pady=3, sticky='W')
-
-        self.horizontal_offset_label = tk.Label(self.parent, text="Set horizontal offset")
-        self.horizontal_offset_label.grid(column=4, row=7, padx=5, pady=3, sticky='W')
-        self.set_horizontal_offset = tk.Entry(self.parent)
-        self.set_horizontal_offset.grid(column=4, row=8, padx=5, pady=3, sticky='W')
-
-        self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.process_radian_values)
-        self.run.grid(column=4, row=9, padx=5, pady=3, sticky='W')
+        # self.pick_line_out_label = tk.Label(self.parent, text="Pick a line out type")
+        # self.pick_line_out_label.grid(column=4, row=0, padx=5, pady=2, sticky="W")
+        #
+        # self.line_out_option_var = tk.StringVar(self.parent)
+        # self.line_out_option_var.set("Radial")  # default value
+        # line_out_options = ["Radial", "Spiral", "Vertical/Horizontal"]
+        # self.option_menu = tk.OptionMenu(self.parent, self.line_out_option_var, *line_out_options)
+        # self.option_menu.grid(column=4, row=1, padx=5, pady=2, sticky="W")
+        #
+        # self.chose_line_out_button = tk.Button(self.parent, text="Specify Line Out Parameters", anchor="w",
+        #                                        command=self.create_line_out_options)
+        # self.chose_line_out_button.grid(column=4, row=2, padx=5, pady=2, sticky="W")
+        #
+        # self.radial_entry_instructions = tk.Label(self.parent, text="Enter number of lines.")
+        # self.radial_entry_instructions.grid(column=4, row=3, padx=5, pady=2, sticky="W")
+        # self.radial_entry = tk.Entry(self.parent)
+        # self.radial_entry.grid(column=4, row=4, padx=5, pady=2, sticky="W")
+        #
+        # self.vertical_offset_label = tk.Label(self.parent, text="Set vertical offset")
+        # self.vertical_offset_label.grid(column=4, row=5, padx=5, pady=3, sticky='W')
+        # self.set_vertical_offset = tk.Entry(self.parent)
+        # self.set_vertical_offset.grid(column=4, row=6, padx=5, pady=3, sticky='W')
+        #
+        # self.horizontal_offset_label = tk.Label(self.parent, text="Set horizontal offset")
+        # self.horizontal_offset_label.grid(column=4, row=7, padx=5, pady=3, sticky='W')
+        # self.set_horizontal_offset = tk.Entry(self.parent)
+        # self.set_horizontal_offset.grid(column=4, row=8, padx=5, pady=3, sticky='W')
+        #
+        # self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.process_radian_values)
+        # self.run.grid(column=4, row=9, padx=5, pady=3, sticky='W')
 
         """Column 5: Create Line out PNGs"""
 
-        self.integrate_label = tk.Label(self.parent, text="Integrate phase")
-        self.integrate_label.grid(column=5, row=0, padx=5, pady=3, sticky='W')
-        self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.integrate_phi)
-        self.run.grid(column=5, row=1, padx=5, pady=3, sticky='W')
+        # self.integrate_label = tk.Label(self.parent, text="Integrate phase")
+        # self.integrate_label.grid(column=5, row=0, padx=5, pady=3, sticky='W')
+        # self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.integrate_phi)
+        # self.run.grid(column=5, row=1, padx=5, pady=3, sticky='W')
 
-        self.integrate_10_label = tk.Label(self.parent, text="Integrate phase 10")
-        self.integrate_10_label.grid(column=5, row=2, padx=5, pady=3, sticky='W')
-        self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.integrate_phi_by_10)
-        self.run.grid(column=5, row=3, padx=5, pady=3, sticky='W')
+        # self.integrate_10_label = tk.Label(self.parent, text="Integrate phase 10")
+        # self.integrate_10_label.grid(column=5, row=2, padx=5, pady=3, sticky='W')
+        # self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.integrate_phi_by_10)
+        # self.run.grid(column=5, row=3, padx=5, pady=3, sticky='W')
 
-        self.subtract = tk.Label(self.parent, text="Subtract")
-        self.subtract.grid(column=5, row=4, padx=5, pady=3, sticky='W')
-        self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.subtractz)
-        self.run.grid(column=5, row=5, padx=5, pady=3, sticky='W')
+        # self.subtract = tk.Label(self.parent, text="Subtract")
+        # self.subtract.grid(column=5, row=4, padx=5, pady=3, sticky='W')
+        # self.run = tk.Button(self.parent, text='Run', anchor='w', command=self.subtractz)
+        # self.run.grid(column=5, row=5, padx=5, pady=3, sticky='W')
 
 
     """""
@@ -289,6 +289,13 @@ class MainApplication(tk.Frame):
                 for key, value in calib_list:
                     writer.writerow([key, value])
 
+            #place the phi and img generation here to remove the buttons
+            # csv matrices
+            self.gen_kvaphi_matrices()
+            # iamges
+            self.gen_imgs()
+
+
 
     def readKeyValues(self):
         # input file reader
@@ -346,7 +353,7 @@ class MainApplication(tk.Frame):
         self.r_sample_full_path_nonans = calibration_list["r_sample_noNaNs"]
         self.r_background_full_path_nonans = calibration_list["r_background_noNaNs"]
         # create noNaNs button
-        self.no_nan_button = tk.Button(self.parent, text="Generate No NaN Files", anchor="w",
+        self.no_nan_button = tk.Button(self.parent, text="Generate No NaN, CSV & IMG Files", anchor="w",
                                           command=self.gen_no_nan_files)
         self.no_nan_button.grid(column=2, row=5, padx=10, pady=1, sticky="W")
 

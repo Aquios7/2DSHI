@@ -151,6 +151,7 @@ def step_six_b(stream, continue_stream, app):
         continue_stream = False
 
     cv2.destroyAllWindows()
+    stream.save_config()
 
 def step_six_c(stream, continue_stream):
     if stream.args.verbose:
@@ -201,3 +202,4 @@ def step_six_c(stream, continue_stream):
         continue_stream = stream.keep_streaming()
 
     cv2.destroyAllWindows()
+    stream.save_config()

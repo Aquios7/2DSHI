@@ -59,7 +59,7 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
     last_frame = False
 
     if stream.test:
-        continue_stream = True
+        continue_stream = False
     else:
         desc = sd.S06_DESC.value
         continue_stream = uiv.yes_no_quit(desc)
@@ -324,3 +324,4 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
 
     cv2.destroyAllWindows()
     print("We completed this many frames: ", frames_we_went_through)
+    stream.save_config()

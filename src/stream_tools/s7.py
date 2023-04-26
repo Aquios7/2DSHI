@@ -30,7 +30,7 @@ def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg,
     last_frame = False
 
     if stream.test:
-        record_r_matrices = True
+        record_r_matrices = False
     else:
         desc = sd.S07_DESC.value
         record_r_matrices = uiv.yes_no_quit(desc)
@@ -341,4 +341,4 @@ def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg,
         s8_frame_count += 1
 
     cv2.destroyAllWindows()
-    #tk_app.attempt_to_quit(app)
+    stream.save_config()
