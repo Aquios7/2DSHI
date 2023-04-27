@@ -149,6 +149,8 @@ def kill_app(app):
     try:
         app.callback()
         app.destroy()
+        app.root.destroy()
+
     except RuntimeError:
         pass
     except Exception as e:

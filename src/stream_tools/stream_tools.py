@@ -16,6 +16,7 @@ from coregistration import find_gaussian_profile as fgp
 from experiment_set_up import find_previous_run as fpr
 from constants import STEP_DESCRIPTIONS as sd
 from experiment_set_up import user_input_validation as uiv
+from gui import runGUI
 # used for Linux
 # from src.image_processing import bit_depth_conversion as bdc
 # from src.coregistration import find_gaussian_profile as fgp
@@ -655,6 +656,17 @@ class Stream:
 
         self.a_images = list()
         self.b_prime_images = list()
+
+        # destroy all previous tk windows
+        # for window in self.tkapp.root.winfo_children():
+        #     window.destroy()
+        # time.sleep(1)
+        # self.tkapp.root.quit()
+        # self.tkapp.root.destroy()
+        # tk_app.attempt_to_quit(self.tkapp)
+        # time.sleep(1)
+        # this is where the runGUI will start
+        runGUI.begin_run(self.data_directory)
 
 
 
