@@ -35,6 +35,8 @@ class Stream:
         self.config = 'config.ini'
         self.args = None
         self.test_dir = '~/test-data/'
+        self.stepList = None
+        self.prev_direc = None
 
         self.continuous = True
         self.single_shot = False if self.continuous else True
@@ -461,7 +463,7 @@ class Stream:
 
             if self.static_center_a is None or self.static_center_b is None:
                 ca, cb = self.find_centers(a_as_16bit, b_as_16bit)
-                set_static_centers(ca, cb)
+                self.set_static_centers(ca, cb)
                 a = self.full_img_w_roi_borders(a, ca)
                 b = self.full_img_w_roi_borders(b, cb)
             else:
@@ -481,7 +483,8 @@ class Stream:
             else:
                 self.show_16bit_representations(a, b, False, centers)
 
-    def start(self, config_files, config_folder, test, reason, args, run_directory2, current_direc, histogram=False):
+    def start(self, config_files, config_folder, test, reason, args, run_directory2, current_direc,
+              stepList, prev_direc, histogram=False):
         # update test
         self.test = test
 
@@ -493,6 +496,12 @@ class Stream:
 
         # sets the test directory being used
         self.test_dir = current_direc + '/test-data'
+
+        # sets stepList for steps 1-5
+        self.stepList = stepList
+
+        # sets the previous directory that will be used
+        self.prev_direc = prev_direc
 
         # verbose description
         if self.args.verbose:

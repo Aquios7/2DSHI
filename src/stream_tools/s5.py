@@ -34,11 +34,12 @@ def load_wm2_if_present(stream):
 # TODO: ADD FUNCTION STEP 6 THAT AUTOMATICALLY GOES THROUGH 6A-6C SO THAT MAIN AND STREAM TOOLS LOOK CLEANER
 
 def step_five(stream, continue_stream):
-    """
-    During Step 5 the ROI is shown, but you can still see the rest of the image. Here we are able to only show pixels
-    that fall inside our regions of interest.
-
-    """
+    if stream.args.verbose:
+        print("""
+            During Step 5 the ROI is shown, but you can still see the rest of the image. Here we are able to only show pixels
+            that fall inside our regions of interest.
+        
+            """)
     if stream.test:
         close_in = False
     else:

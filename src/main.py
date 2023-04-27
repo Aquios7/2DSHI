@@ -17,6 +17,7 @@ from image_processing import bit_depth_conversion as bdc
 from path_management import image_management as im
 from datetime import datetime
 from gui import startupGUI
+from gui import runGUI
 
 
 # Create an instance of an ArgumentParser Object
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     current_directory = os.getcwd()
 
     # run a pre-start GUI asking for specifics before the main run
-    current_directory, test, reason = startupGUI.begin_startup(current_directory)
+    current_directory, test, reason, stepList, prev_direc = startupGUI.begin_startup(current_directory)
     print(reason)
 
     # check for current directory
@@ -88,6 +89,9 @@ if __name__ == "__main__":
     # Prepare Camera Configuration Files
     config_files_by_cam = cam_setup.assign_config_files(camera_configurations_folder)
 
+    # Prepare directions for steps 1-5 using the runGUI
+
+
     # Create a Stream() Instance
     stream = stream_tools.Stream()
     stream.set_current_run(current_datetime)
@@ -98,7 +102,7 @@ if __name__ == "__main__":
     stream.offer_to_jump(highest_jump_level)
 
     # Start steam (Display Histogram if user specified so in input)
-    stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2, current_direc)
+    stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2, current_direc, stepList, prev_direc)
 
     # terminal message for end of stream
     print("Stream has ended.")
