@@ -666,7 +666,7 @@ class Stream:
         # tk_app.attempt_to_quit(self.tkapp)
         # time.sleep(1)
         # this is where the runGUI will start
-        runGUI.begin_run(self.data_directory)
+        # runGUI.begin_run(self.data_directory)
 
 
 
