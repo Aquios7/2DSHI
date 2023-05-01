@@ -516,8 +516,8 @@ class Stream:
 
         if self.test:
             # get a test image
-            images1 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_a_frames/*.png')
-            images2 = glob.glob('/home/andrew/Desktop/2D-folder/test-data/cam_b_frames/*.png')
+            images1 = glob.glob(self.test_dir + '/cam_a_frames/*.png')
+            images2 = glob.glob(self.test_dir + '/cam_b_frames/*.png')
             images1 = natsort.natsorted(images1)
             images2 = natsort.natsorted(images2)
 
