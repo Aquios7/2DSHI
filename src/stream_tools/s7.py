@@ -15,10 +15,10 @@ twelve_bit_max = (2 ** 12) - 1
 eight_bit_max = (2 ** 8) - 1
 
 
-def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
+def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                histograms_r, lines_r, figs_r):
 
-    app.disable_sigma_slider()
+    # app.disable_sigma_slider()
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
 
     R_VIS_HEIGHT = 500
@@ -315,12 +315,12 @@ def step_seven(stream, run_folder, app, figs, histograms, lines, histograms_alg,
                         cv2.imshow('R Mean Plot', plot_img)
                         cv2.waitKey(60000)
                         cv2.destroyAllWindows()
-                        range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?", app=app)
+                        range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
                         if range_satisfaction_input is True:
                             satisfied_with_range = True
                             stream.start_writing_at = starting_frame
                             stream.end_writing_at = end_frame
-            satisfied_with_run = uiv.yes_no_quit("Are you satisfied with this run? ", app=app)
+            satisfied_with_run = uiv.yes_no_quit("Are you satisfied with this run? ")
 
 
         if record_r_matrices is False:

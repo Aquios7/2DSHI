@@ -45,7 +45,7 @@ eight_bit_max = (2 ** 8) - 1
 
 
 
-def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
+def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                histograms_r, lines_r, figs_r):
 
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
@@ -70,8 +70,8 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
     while continue_stream != last_frame:
         r_subsection_pixel_vals = np.array(list())
 
-        if last_frame:
-            app.stop_streaming_override = False
+        # if last_frame:
+        #     app.stop_streaming_override = False
 
         stream.frame_count += 1
 
@@ -84,26 +84,26 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
         x_a, y_a = stream.static_center_a
         x_b, y_b = stream.static_center_b
 
-        n_sigma = app.foo
-        h_offset = app.horizontal_offset
-        v_offset = app.vertical_offset
-        stream.h_offset = h_offset
-        stream.v_offset = v_offset
-        stream.n_sigma = n_sigma
+        # n_sigma = app.foo
+        # h_offset = app.horizontal_offset
+        # v_offset = app.vertical_offset
+        # stream.h_offset = h_offset
+        # stream.v_offset = v_offset
+        # stream.n_sigma = n_sigma
 
-        stream.roi_a = stream.current_frame_a[
-                     y_a - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
-                     y_a + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset,
-                     x_a - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
-                     x_a + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
-                     ]
-
-        stream.roi_b = stream.current_frame_b[
-                     y_b - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
-                     y_b + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset:,
-                     x_b - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
-                     x_b + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
-                     ]
+        # stream.roi_a = stream.current_frame_a[
+        #              y_a - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
+        #              y_a + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset,
+        #              x_a - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
+        #              x_a + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
+        #              ]
+        #
+        # stream.roi_b = stream.current_frame_b[
+        #              y_b - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
+        #              y_b + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset:,
+        #              x_b - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
+        #              x_b + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
+        #              ]
 
 
         #h = stream.roi_b.shape[0]
@@ -224,29 +224,29 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
                                                  DISPLAYABLE_R_MATRIX[:, :, 2])
 
         mult_factor = 0.5
-        sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
-        sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma * mult_factor)
+        # sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
+        # sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma * mult_factor)
         angle = 0
         startAngle = 0
         endAngle = 360
-        axesLength = (sigma_x_div, sigma_y_div)
+        # axesLength = (sigma_x_div, sigma_y_div)
         # Red color in BGR
         color = (255, 255, 255)
         # Line thickness of 5 px
         thickness = -1
-        image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
-                            angle, startAngle, endAngle, color, 1)
+        # image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+        #                     angle, startAngle, endAngle, color, 1)
 
-        blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
-        blk_image2 = cv2.ellipse(blk_image.copy(), R_MATRIX_CENTER, axesLength,
-                            angle, startAngle, endAngle, color, thickness)
+        # blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
+        # blk_image2 = cv2.ellipse(blk_image.copy(), R_MATRIX_CENTER, axesLength,
+        #                     angle, startAngle, endAngle, color, thickness)
 
-        combined = blk_image2[:, :, 0] + blk_image2[:, :, 1] + blk_image2[:, :, 2]
-        rows, cols = np.where(combined > 0)
+        # combined = blk_image2[:, :, 0] + blk_image2[:, :, 1] + blk_image2[:, :, 2]
+        # rows, cols = np.where(combined > 0)
 
 
-        for i, j in zip(rows, cols):
-            r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
+        # for i, j in zip(rows, cols):
+        #     r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
 
 
         nan_mean = np.nanmean(r_subsection_pixel_vals)
@@ -265,7 +265,7 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
         R_VALUES = Image.new('RGB', (dr_width, dr_height), (eight_bit_max, eight_bit_max, eight_bit_max))
 
         draw = ImageDraw.Draw(R_VALUES)
-        font = ImageFont.truetype('arial.ttf', size=int(20*n_sigma))
+        font = ImageFont.truetype('arial.ttf', size=int(20))
         (x, y) = (50, 50)
         message = "R Matrix Values\n"
         message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
@@ -287,7 +287,7 @@ def step_six(stream, app, figs, histograms, lines, histograms_alg, lines_alg, fi
 
 
         VALUES_W_HIST = np.concatenate((R_VALUES_resized * (2 ** 8), np.array(R_HIST)), axis=1)
-        R_MATRIX_DISPLAYABLE_FINAL = image
+        # R_MATRIX_DISPLAYABLE_FINAL = image
         R_MATRIX_DISPLAYABLE_FINAL = np.array(R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
 
         #print("concat first arg, VALUES_W_HIST, size:", VALUES_W_HIST.shape)

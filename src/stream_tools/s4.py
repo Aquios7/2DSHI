@@ -9,7 +9,7 @@ from experiment_set_up import user_input_validation as uiv
 from exceptions import  coregistration_exceptions as cre
 from constants import STEP_DESCRIPTIONS as sd
 
-cam_frame_height_pixels = 1200
+cam_frame_height_pixels = 1080
 cam_frame_width_pixels = 1920
 
 def step_four(stream, continue_stream, autoload_roi=False):

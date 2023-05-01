@@ -591,8 +591,8 @@ class Stream:
 
         while calibration_success is not True:
             try:
-                app = tk_app.App(self)
-                self.tkapp = app
+                # app = tk_app.App(self)
+                # self.tkapp = app
                 if self.jump_level <= 1:
                     s1.step_one(self, histogram, continue_stream)
 
@@ -644,7 +644,7 @@ class Stream:
             sys.exit(0)
 
         if self.jump_level <= step:
-            s6.step_six(self, app, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
+            s6.step_six(self, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                    histograms_r, lines_r, figs_r)
 
             sp.store_n_sigma(self, run_folder)
@@ -671,7 +671,7 @@ class Stream:
 
 
         if self.jump_level <= 7:
-            s7.step_seven(self, run_folder, app, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
+            s7.step_seven(self, run_folder, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                histograms_r, lines_r, figs_r)
 
 
@@ -681,12 +681,12 @@ class Stream:
 
         if self.test:
             print("test passed")
-            tk_app.attempt_to_quit(self.tkapp)
+            # tk_app.attempt_to_quit(self.tkapp)
             sys.exit(0)
 
         elif self.all_cams.IsGrabbing():
             self.all_cams.StopGrabbing()
         s9.step_nine(run_folder)
-        tk_app.attempt_to_quit(self.tkapp)
+        # tk_app.attempt_to_quit(self.tkapp)
         print("Command line made it here")
         #sys.exit(0)

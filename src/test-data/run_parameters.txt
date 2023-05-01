@@ -1,0 +1,19 @@
+video_a	None
+video_b	None
+camera_configuration_file	None
+camera_configuration_file_a	None
+camera_configuration_file_b	None
+ExposureTime	None
+AcquisitionFrameRate	1
+SaveImages	0
+SaveVideos	0
+FrameBreak	-1
+DisplayHistocam	0
+SaveHistocam	0
+Raw	1
+ResizeFactor	1.0
+Grid	0
+CrystalTemp1	151.6
+CrystalTemp2	149.0
+CompensatorAngle	120.0
+Target	no pinehole, 103 deg, 65 mv
