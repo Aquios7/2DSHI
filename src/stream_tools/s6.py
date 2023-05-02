@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 from experiment_set_up import user_input_validation as uiv
 import os, csv
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
 
 """
 
@@ -62,7 +63,8 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         continue_stream = False
     else:
         desc = sd.S06_DESC.value
-        continue_stream = uiv.yes_no_quit(desc)
+        # continue_stream = uiv.yes_no_quit(desc)
+        continue_stream = popups.yes_no_popup(desc)
     s7_frame_count = 1
     frames_we_went_through = 0
     r_subsection_pixel_vals = None
@@ -175,8 +177,8 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         hgs.update_histogram(histograms_alg, lines_alg, "plus", 4096, plus_, plus=True)
         hgs.update_histogram(histograms_alg, lines_alg, "minus", 4096, minus_, minus=True)
 
-        displayable_plus = cv2.add(stream.roi_a, stream.roi_b) * 16
-        displayable_minus = cv2.subtract(stream.roi_a, stream.roi_b) * 16
+        displayable_plus = cv2.add(stream.roi_a + 1, stream.roi_b + 1) * 16
+        displayable_minus = cv2.subtract(stream.roi_a + 1, stream.roi_b + 1) * 16
 
         figs_alg["plus"].canvas.draw()  # Draw updates subplots in interactive mode
         hist_img_plus = np.fromstring(figs_alg["plus"].canvas.tostring_rgb(), dtype=np.uint8, sep='')

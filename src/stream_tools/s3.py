@@ -10,11 +10,13 @@ from experiment_set_up import user_input_validation as uiv
 from constants import STEP_DESCRIPTIONS as sd
 from matplotlib import pyplot
 import matplotlib.ticker as plticker
+from gui import popups
 
 eight_bit_max = (2 ** 8) - 1
 twelve_bit_max = (2 ** 12) - 1
 
-y_n_msg = "Proceed? (y/n): "
+# superfluous?
+# y_n_msg = "Proceed? (y/n): "
 
 
 def step_three(stream, autoload_prev_static_centers=False):
@@ -52,7 +54,8 @@ def step_three(stream, autoload_prev_static_centers=False):
     if stream.test:
         freestream_ = False
     else:
-        freestream_ = uiv.yes_no_quit(step_description)
+        # freestream_ = uiv.yes_no_quit(step_description)
+        freestream_ = popups.yes_no_popup(step_description)
 
     if freestream_ is True:
         continue_stream = True
@@ -88,9 +91,10 @@ def step_three(stream, autoload_prev_static_centers=False):
 
     step_description = sd.S03_DESC.value
     if stream.test:
-        set_centers_ = 'n'
+        set_centers_ = False
     else:
-        set_centers_ = uiv.yes_no_quit(step_description)
+        # set_centers_ = uiv.yes_no_quit(step_description)
+        set_centers_ = popups.yes_no_popup(step_description)
 
     if set_centers_ is True:
         continue_stream = True

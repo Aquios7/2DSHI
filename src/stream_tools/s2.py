@@ -6,6 +6,7 @@ from image_processing import bit_depth_conversion as bdc
 from coregistration import img_characterization as ic
 from experiment_set_up import user_input_validation as uiv
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
 
 
 def step_two(stream, continue_stream, autoload_prev_wm1=False):
@@ -48,9 +49,10 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
         step_description = sd.S02_DESC_PREV_WARP_MATRIX.value
         #step_description = "Step 2 - You created a Warp Matrix 1 last run. Would you like to use it?"
         if stream.test:
-            use_last_wp1 = 'y'
+            use_last_wp1 = True
         else:
-            use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
+            # use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
+            use_last_wp1 = popups.yes_no_popup(step_description)
         # creating warp matrix
         if use_last_wp1 is True:
             stream.warp_matrix = np.load(prev_wp1_path)
@@ -60,7 +62,8 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     else:
         step_description = sd.S02_DESC_NO_PREV_WARP_MATRIX.value
         #step_description = "Step 2 - New Co-Registration with with Euclidean Transform?"
-        coregister_ = uiv.yes_no_quit(step_description)
+        # coregister_ = uiv.yes_no_quit(step_description)
+        coregister_ = popups.yes_no_popup(step_description)
 
     if coregister_ is True:
         warp_ = None

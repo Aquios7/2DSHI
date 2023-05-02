@@ -8,8 +8,10 @@ import cv2
 from experiment_set_up import user_input_validation as uiv
 from . import App as tk_app
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
 
-y_n_msg = "Proceed? (y/n): "
+# superfluous?
+# y_n_msg = "Proceed? (y/n): "
 sixteen_bit_max = (2 ** 16) - 1
 twelve_bit_max = (2 ** 12) - 1
 eight_bit_max = (2 ** 8) - 1
@@ -33,7 +35,8 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
         record_r_matrices = False
     else:
         desc = sd.S07_DESC.value
-        record_r_matrices = uiv.yes_no_quit(desc)
+        # record_r_matrices = uiv.yes_no_quit(desc)
+        record_r_matrices = popups.yes_no_popup(desc)
     s8_frame_count = 1
     r_subsection_pixel_vals = None
     satisfied_with_run = False
@@ -315,12 +318,14 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                         cv2.imshow('R Mean Plot', plot_img)
                         cv2.waitKey(60000)
                         cv2.destroyAllWindows()
-                        range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
+                        # range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
+                        range_satisfaction_input = popups.yes_no_popup("Are you satisfied with this range?")
                         if range_satisfaction_input is True:
                             satisfied_with_range = True
                             stream.start_writing_at = starting_frame
                             stream.end_writing_at = end_frame
-            satisfied_with_run = uiv.yes_no_quit("Are you satisfied with this run? ")
+            # satisfied_with_run = uiv.yes_no_quit("Are you satisfied with this run? ")
+            satisfied_with_run = popups.yes_no_popup("Are you satisfied with this run?")
 
 
         if record_r_matrices is False:

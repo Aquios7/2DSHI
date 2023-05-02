@@ -7,6 +7,8 @@ from experiment_set_up import find_previous_run as fpr
 from experiment_set_up import user_input_validation as uiv
 
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
+
 
 def load_wm2_if_present(stream):
     if stream.args.verbose:
@@ -44,7 +46,8 @@ def step_five(stream, continue_stream):
         close_in = False
     else:
         desc = sd.S05_DESC.value
-        close_in = uiv.yes_no_quit(desc)
+        # close_in = uiv.yes_no_quit(desc)
+        close_in = popups.yes_no_popup(desc)
 
     if close_in is True:
         continue_stream = True
@@ -88,7 +91,8 @@ def step_six_b(stream, continue_stream, app):
         find_rois_ = False
     else:
         desc = "Step 6B - Re-Coregister?"
-        find_rois_ = uiv.yes_no_quit(desc)
+        # find_rois_ = uiv.yes_no_quit(desc)
+        find_rois_ = popups.yes_no_popup(desc)
 
     if find_rois_ is True:
         continue_stream = True
@@ -165,7 +169,8 @@ def step_six_c(stream, continue_stream):
         display_new = True
     else:
         desc = "Step 6C - Display Re-Coregistered Images ?"
-        display_new = uiv.yes_no_quit(desc)
+        # display_new = uiv.yes_no_quit(desc)
+        display_new = popups.yes_no_popup(desc)
 
     if display_new is True:
         continue_stream = True

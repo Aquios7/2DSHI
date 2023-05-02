@@ -8,6 +8,7 @@ from experiment_set_up import find_previous_run as fpr
 from experiment_set_up import user_input_validation as uiv
 from exceptions import  coregistration_exceptions as cre
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
 
 cam_frame_height_pixels = 1080
 cam_frame_width_pixels = 1920
@@ -70,7 +71,8 @@ def step_four(stream, continue_stream, autoload_roi=False):
     max_n_sigma = 0
     s5_frame_count = 0
     step_description = sd.S04_DESC.value
-    find_rois_ = uiv.yes_no_quit(step_description)
+    # find_rois_ = uiv.yes_no_quit(step_description)
+    find_rois_ = popups.yes_no_popup(step_description)
     failed_frame_count = 0
     print("2")
     if find_rois_ is True:

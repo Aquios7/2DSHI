@@ -7,6 +7,7 @@ import cv2
 from stream_tools.curveDigitizer import run as runCurve
 from experiment_set_up import user_input_validation as uiv
 from constants import STEP_DESCRIPTIONS as sd
+from gui import popups
 
 def step_one(stream, histogram, continue_stream):
     if stream.args.verbose:
@@ -28,10 +29,12 @@ def step_one(stream, histogram, continue_stream):
 
     #step_description = "Step 1 - Stream Raw Camera Feed"
     if stream.test:
+        # start = popups.yes_no_popup(step_description)
         start = False
     else:
-        start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.
-    display_stream = True if start is True else False
+        # start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.
+        start = popups.yes_no_popup(sd.S01_DESC.value)
+    display_stream = start
     # display_stream = stream.stepList
 
     if (stream.histocam_a is None or stream.histocam_b is None) and histogram:  # If use wants to display Histograms
