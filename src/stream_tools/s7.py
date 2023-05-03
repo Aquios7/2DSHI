@@ -5,6 +5,7 @@ from image_processing import bit_depth_conversion as bdc
 from PIL import Image, ImageDraw, ImageFont
 from . import histograms as hgs
 import cv2
+import csv
 from experiment_set_up import user_input_validation as uiv
 from . import App as tk_app
 from constants import STEP_DESCRIPTIONS as sd
@@ -15,10 +16,15 @@ from gui import popups
 sixteen_bit_max = (2 ** 16) - 1
 twelve_bit_max = (2 ** 12) - 1
 eight_bit_max = (2 ** 8) - 1
+n_ = 0
 
 
 def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                histograms_r, lines_r, figs_r):
+    global n_
+    # saving paths to frames folders
+    a_frames_dir = os.path.join(run_folder, "cam_a_frames")
+    b_frames_dir = os.path.join(run_folder, "cam_b_frames")
 
     # app.disable_sigma_slider()
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
@@ -318,14 +324,34 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                         cv2.imshow('R Mean Plot', plot_img)
                         cv2.waitKey(60000)
                         cv2.destroyAllWindows()
-                        # range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
-                        range_satisfaction_input = popups.yes_no_popup("Are you satisfied with this range?")
-                        if range_satisfaction_input is True:
-                            satisfied_with_range = True
-                            stream.start_writing_at = starting_frame
-                            stream.end_writing_at = end_frame
-            # satisfied_with_run = uiv.yes_no_quit("Are you satisfied with this run? ")
-            satisfied_with_run = popups.yes_no_popup("Are you satisfied with this run?")
+                        # # range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
+                        # range_satisfaction_input = popups.yes_no_popup("Are you satisfied with this range?")
+                        # if range_satisfaction_input is True:
+                        #     satisfied_with_range = True
+                        #     stream.start_writing_at = starting_frame
+                        #     stream.end_writing_at = end_frame
+
+                # save r matrix
+                n_ += 1
+                r_matrix = R_MATRIX
+                csv_path = os.path.join(run_folder, "r_matrix_{}.csv".format(n_))
+                with open(csv_path, "w+", newline='') as my_csv:
+                    csvWriter = csv.writer(my_csv, delimiter=',')
+                    csvWriter.writerows(r_matrix.tolist())
+
+                # save a matrix
+                a_matrix = a_matrix
+                csv_path = os.path.join(run_folder, "a_matrix_{}.csv".format(n_))
+                with open(csv_path, "w+", newline='') as my_csv:
+                    csvWriter = csv.writer(my_csv, delimiter=',')
+                    csvWriter.writerows(a_matrix.tolist())
+
+                # save b matrix
+                b_matrix = b_prime_frames[i - 1]
+                csv_path = os.path.join(run_folder, "b_matrix_{}.csv".format(n_))
+                with open(csv_path, "w+", newline='') as my_csv:
+                    csvWriter = csv.writer(my_csv, delimiter=',')
+                    csvWriter.writerows(b_matrix.tolist())
 
 
         if record_r_matrices is False:
