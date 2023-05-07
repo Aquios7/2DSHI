@@ -42,10 +42,13 @@ def step_five(stream, continue_stream):
             that fall inside our regions of interest.
         
             """)
+
+    desc = sd.S05_DESC.value
+
     if stream.test:
-        close_in = False
+        # close_in = False
+        close_in = popups.yes_no_popup(desc)
     else:
-        desc = sd.S05_DESC.value
         # close_in = uiv.yes_no_quit(desc)
         close_in = popups.yes_no_popup(desc)
 
@@ -165,10 +168,14 @@ def step_six_c(stream, continue_stream):
         Here we may display the newly re-co-registered images
     
         """)
+
+    desc = "Step 6C - Display Re-Coregistered Images ?"
+
     if stream.test:
-        display_new = True
+        # display_new = True
+        display_new = popups.yes_no_popup(desc)
+
     else:
-        desc = "Step 6C - Display Re-Coregistered Images ?"
         # display_new = uiv.yes_no_quit(desc)
         display_new = popups.yes_no_popup(desc)
 

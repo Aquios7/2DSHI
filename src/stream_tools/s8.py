@@ -67,9 +67,6 @@ def step_eight(stream, start_writing_at, end_writing_at, run_folder, a_images, a
             stats_csvWriter = csv.writer(stats_csv, delimiter=',')
             stats_csvWriter.writerow(stats[0])
             count = 0
-            for i in range(start_writing_at, end_writing_at + 1):
-                count += 1
-                stats_csvWriter.writerow([count, stats[i][1], stats[i][2]])
         print("\tMatrices and Matrix Stats have finished writing to file.")
 
     else:

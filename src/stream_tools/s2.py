@@ -31,7 +31,7 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
     if stream.test:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.test_dir)
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
-        autoload_prev_wm1 = True
+        autoload_prev_wm1 = False
     else:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
@@ -49,7 +49,8 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
         step_description = sd.S02_DESC_PREV_WARP_MATRIX.value
         #step_description = "Step 2 - You created a Warp Matrix 1 last run. Would you like to use it?"
         if stream.test:
-            use_last_wp1 = True
+            # use_last_wp1 = True
+            use_last_wp1 = popups.yes_no_popup(step_description)
         else:
             # use_last_wp1 = uiv.yes_no_quit(step_description, app=stream)
             use_last_wp1 = popups.yes_no_popup(step_description)
@@ -151,8 +152,8 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
         stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
         # setting up the images for test
         if stream.test:
-            a_as_16bit = cv2.imread(stream.current_frame_a)
-            b_as_16bit = cv2.imread(stream.current_frame_b)
+            a_as_16bit = stream.current_frame_a
+            b_as_16bit = stream.current_frame_b
         # actual run
         else:
             a_as_16bit = bdc.to_16_bit(stream.current_frame_a)

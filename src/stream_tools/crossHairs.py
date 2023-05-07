@@ -76,8 +76,8 @@ def run(stream):
     color = (255 * 256, 10 * 256, 0)
     if stream.test:
         stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
-        a_as_16bit = cv2.imread(stream.current_frame_a)
-        b_as_16bit = cv2.imread(stream.current_frame_b)
+        a_as_16bit = stream.current_frame_a
+        b_as_16bit = stream.current_frame_b
         frameA = a_as_16bit
         frameB = b_as_16bit
         cv2.imshow('camA', frameA)

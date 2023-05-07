@@ -58,16 +58,19 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
     DASHBOARD_WIDTH = int(DASHBOARD_HEIGHT*X_TO_Y_RATIO*2)
 
     last_frame = False
+    desc = sd.S06_DESC.value
 
     if stream.test:
-        continue_stream = False
+        # continue_stream = False
+        continue_stream = popups.yes_no_popup(desc)
+
     else:
-        desc = sd.S06_DESC.value
         # continue_stream = uiv.yes_no_quit(desc)
         continue_stream = popups.yes_no_popup(desc)
     s7_frame_count = 1
     frames_we_went_through = 0
     r_subsection_pixel_vals = None
+    prev_R_MATRIX = None
 
     while continue_stream != last_frame:
         r_subsection_pixel_vals = np.array(list())
@@ -151,10 +154,10 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
 
         A_ON_B = np.concatenate((ROI_A_WITH_HISTOGRAM, ROI_B_WITH_HISTOGRAM), axis=0)
 
-        plus_ = np.add(stream.roi_a, stream.roi_b)
+        plus_ = np.add(stream.roi_a + 1, stream.roi_b + 1)
         minus_ = np.zeros(stream.roi_a.shape, dtype='int16')
-        minus_ = np.add(minus_, stream.roi_a)
-        minus_ = np.add(minus_, stream.roi_b * (-1))
+        minus_ = np.add(minus_, stream.roi_a + 1)
+        minus_ = np.add(minus_, stream.roi_b + 1 * (-1))
 
         # Start Saturation Flag Code
 
@@ -224,6 +227,20 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
 
         DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX > 0.00, abs(R_MATRIX * (2 ** 8 - 1)),
                                                  DISPLAYABLE_R_MATRIX[:, :, 2])
+        # create a displayable subtraction of the previous and current R matrices
+        if frames_we_went_through > 0:
+            sub_R_MATRIX = np.subtract(R_MATRIX, prev_R_MATRIX)
+
+            sub_h_R_MATRIX = sub_R_MATRIX.shape[0]
+            sub_w_R_MATRIX = sub_R_MATRIX.shape[1]
+            sub_R_MATRIX_CENTER = int(sub_w_R_MATRIX / 2), int(sub_h_R_MATRIX / 2)
+
+            sub_DISPLAYABLE_R_MATRIX = np.zeros((sub_R_MATRIX.shape[0], sub_R_MATRIX.shape[1], 3), dtype=np.uint8)
+            sub_DISPLAYABLE_R_MATRIX[:, :, 1] = np.where(sub_R_MATRIX < 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)), 0)
+            sub_DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(sub_R_MATRIX < 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)), 0)
+
+            sub_DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(sub_R_MATRIX > 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)),
+                                                     sub_DISPLAYABLE_R_MATRIX[:, :, 2])
 
         mult_factor = 0.5
         # sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
@@ -288,6 +305,7 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         R_VALUES_resized = cv2.resize(R_VALUES, (w, h), interpolation=cv2.INTER_AREA)
 
 
+
         VALUES_W_HIST = np.concatenate((R_VALUES_resized * (2 ** 8), np.array(R_HIST)), axis=1)
         # R_MATRIX_DISPLAYABLE_FINAL = image
         R_MATRIX_DISPLAYABLE_FINAL = np.array(R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
@@ -300,6 +318,57 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         cv2.imshow("R_MATRIX",
                    np.concatenate((VALUES_W_HIST, R_MATRIX_DISPLAYABLE_FINAL_resized), axis=1)
                    )
+
+        if frames_we_went_through > 0:
+            nan_mean = np.nanmean(r_subsection_pixel_vals)
+            nan_st_dev = np.nanstd(r_subsection_pixel_vals)
+
+            dr_height, dr_width, dr_channels = sub_DISPLAYABLE_R_MATRIX.shape
+
+            hgs.update_histogram(histograms_r, lines_r, "r", 4096, sub_R_MATRIX, r=True)
+            figs_r["r"].canvas.draw()  # Draw updates subplots in interactive mode
+            hist_img_r = np.fromstring(figs_r["r"].canvas.tostring_rgb(), dtype=np.uint8, sep='')  # convert  to image
+            hist_img_r = hist_img_r.reshape(figs_r["r"].canvas.get_width_height()[::-1] + (3,))
+            hist_img_r = cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA)
+            hist_img_r = bdc.to_16_bit(cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA), 8)
+            sub_R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
+
+            sub_R_VALUES = Image.new('RGB', (dr_width, dr_height), (eight_bit_max, eight_bit_max, eight_bit_max))
+
+            draw = ImageDraw.Draw(sub_R_VALUES)
+            font = ImageFont.truetype('arial.ttf', size=int(20))
+            (x, y) = (50, 50)
+            message = "subtracted R Matrix Values\n"
+            message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
+            message = message + "Sigma: {0:.4f}".format(nan_st_dev) + "\n\n"
+
+            message = message + "A+B Sat:  {0:.2f}%".format((count_vals_over_4095 / num_tot_pixels) * 100) + "\n"
+            message = message + "A-B USat:  {0:.2f}%".format((count_vals_lt_zero / num_tot_pixels) * 100) + "\n"
+            message = message + "NaNs:  {0:.2f}%".format((count_nans / num_tot_pixels) * 100) + "\n"
+
+            px_to_mm = 5.86 * (10 ** (-3))
+            message = message + "Shape (px): {0}, {1}".format(sub_h_R_MATRIX, sub_w_R_MATRIX) + "\n"
+            message = message + "Shape (mm):  {0:.2f},  {1:.2f}".format(sub_h_R_MATRIX * px_to_mm,
+                                                                        sub_w_R_MATRIX * px_to_mm) + "\n"
+
+            color = 'rgb(0, 0, 0)'  # black color
+            draw.text((x, y), message, fill=color, font=font)
+            sub_R_VALUES = np.array(sub_R_VALUES)
+
+            sub_R_VALUES_resized = cv2.resize(sub_R_VALUES, (w, h), interpolation=cv2.INTER_AREA)
+
+            sub_VALUES_W_HIST = np.concatenate((sub_R_VALUES_resized * (2 ** 8), np.array(sub_R_HIST)), axis=1)
+            # R_MATRIX_DISPLAYABLE_FINAL = image
+            sub_R_MATRIX_DISPLAYABLE_FINAL = np.array(sub_R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
+
+            sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
+                                                            interpolation=cv2.INTER_AREA)
+
+            cv2.imshow("R_MATRIX",
+                       np.concatenate((sub_VALUES_W_HIST, sub_R_MATRIX_DISPLAYABLE_FINAL_resized), axis=1)
+                       )
+
+        prev_R_MATRIX = R_MATRIX
 
         #cv2.imshow("R_MATRIX", cv2.resize(
         #           np.concatenate((VALUES_W_HIST, R_MATRIX_DISPLAYABLE_FINAL), axis=1)

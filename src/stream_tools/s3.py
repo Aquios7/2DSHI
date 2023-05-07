@@ -28,7 +28,7 @@ def step_three(stream, autoload_prev_static_centers=False):
         """)
     if stream.test:
         previous_run_directory = stream.test_dir
-        autoload_prev_static_centers = True
+        autoload_prev_static_centers = False
     else:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
 
@@ -52,7 +52,8 @@ def step_three(stream, autoload_prev_static_centers=False):
 
     step_description = "S3 FREESTREAM GRIDLINES"
     if stream.test:
-        freestream_ = False
+        # freestream_ = False
+        freestream_ = popups.yes_no_popup(step_description)
     else:
         # freestream_ = uiv.yes_no_quit(step_description)
         freestream_ = popups.yes_no_popup(step_description)

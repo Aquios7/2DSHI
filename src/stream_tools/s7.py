@@ -17,6 +17,7 @@ sixteen_bit_max = (2 ** 16) - 1
 twelve_bit_max = (2 ** 12) - 1
 eight_bit_max = (2 ** 8) - 1
 n_ = 0
+prev_R_MATRIX = None
 
 
 def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
@@ -37,10 +38,13 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
 
     last_frame = False
 
+    desc = sd.S07_DESC.value
+
     if stream.test:
-        record_r_matrices = False
+        # record_r_matrices = False
+        record_r_matrices = popups.yes_no_popup(desc)
+
     else:
-        desc = sd.S07_DESC.value
         # record_r_matrices = uiv.yes_no_quit(desc)
         record_r_matrices = popups.yes_no_popup(desc)
     s8_frame_count = 1
@@ -177,45 +181,6 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX > 0.00, abs(R_MATRIX * (2 ** 8 - 1)),
                                                          DISPLAYABLE_R_MATRIX[:, :, 2])
 
-                sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma)
-                sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma)
-                angle = 0
-                startAngle = 0
-                endAngle = 360
-                axesLength = (sigma_x_div, sigma_y_div)
-                # Red color in BGR
-                color = (255, 255, 255)
-                # Line thickness of 5 px
-                thickness = -1
-                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
-                                    angle, startAngle, endAngle, color, 1)
-
-                blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
-                blk_image2 = cv2.ellipse(blk_image.copy(), R_MATRIX_CENTER, axesLength,
-                                         angle, startAngle, endAngle, color, thickness)
-
-                combined = blk_image2[:, :, 0] + blk_image2[:, :, 1] + blk_image2[:, :, 2]
-                rows, cols = np.where(combined > 0)
-
-                for i, j in zip(rows, cols):
-                    r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
-
-                nan_mean = np.nanmean(r_subsection_pixel_vals)
-                nan_st_dev = np.nanstd(r_subsection_pixel_vals)
-
-                stream.stats.append([len(stream.r_frames), nan_mean, nan_st_dev])
-
-                DISPLAYABLE_R_MATRIX = np.zeros((R_MATRIX.shape[0], R_MATRIX.shape[1], 3), dtype=np.uint8)
-                DISPLAYABLE_R_MATRIX[:, :, 1] = np.where(R_MATRIX < 0.00, abs(R_MATRIX * (2 ** 8 - 1)), 0)
-                DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX < 0.00, abs(R_MATRIX * (2 ** 8 - 1)), 0)
-
-                DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX > 0.00, abs(R_MATRIX * (2 ** 8 - 1)),
-                                                         DISPLAYABLE_R_MATRIX[:, :, 2])
-
-
-                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
-                                    angle, startAngle, endAngle, color, 1)
-
                 dr_height, dr_width, dr_channels = DISPLAYABLE_R_MATRIX.shape
 
                 hgs.update_histogram(histograms_r, lines_r, "r", 4096, R_MATRIX, r=True)
@@ -237,8 +202,8 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 font = ImageFont.truetype('arial.ttf', size=int(16.5*stream.n_sigma))
                 (x, y) = (50, 50)
                 message = "R Matrix Values\n"
-                message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
-                message = message + "Sigma: {0:.4f}".format(nan_st_dev)
+                # message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
+                # message = message + "Sigma: {0:.4f}".format(nan_st_dev)
 
                 px_to_mm = 5.86*(10**(-3))
                 message = message + "Shape (px): {0}, {1}".format(h_R_MATRIX, w_R_MATRIX) + "\n"
@@ -251,13 +216,84 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 R_VALUES = np.array(R_VALUES)
 
                 VALUES_W_HIST = np.concatenate((R_VALUES * (2 ** 8), np.array(stream.R_HIST)), axis=1)
-                R_MATRIX_DISPLAYABLE_FINAL = image
+                # R_MATRIX_DISPLAYABLE_FINAL = image
                 # R_MATRIX_DISPLAYABLE_FINAL = np.array(DISPLAYABLE_R_MATRIX * (2 ** 8), dtype='uint16')
                 R_MATRIX_DISPLAYABLE_FINAL = np.array(R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
                 cv2.imshow("R_MATRIX", cv2.resize(
                     np.concatenate((VALUES_W_HIST, R_MATRIX_DISPLAYABLE_FINAL), axis=1)
                     , (R_VIS_WIDTH, R_VIS_HEIGHT))
                            )
+
+                if current_r_frame > 1:
+                    sub_R_MATRIX = np.subtract(R_MATRIX, prev_R_MATRIX)
+
+                    sub_h_R_MATRIX = sub_R_MATRIX.shape[0]
+                    sub_w_R_MATRIX = sub_R_MATRIX.shape[1]
+                    sub_R_MATRIX_CENTER = int(sub_w_R_MATRIX / 2), int(sub_h_R_MATRIX / 2)
+
+                    sub_DISPLAYABLE_R_MATRIX = np.zeros((sub_R_MATRIX.shape[0], sub_R_MATRIX.shape[1], 3),
+                                                        dtype=np.uint8)
+                    sub_DISPLAYABLE_R_MATRIX[:, :, 1] = np.where(sub_R_MATRIX < 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)),
+                                                                 0)
+                    sub_DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(sub_R_MATRIX < 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)),
+                                                                 0)
+
+                    sub_DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(sub_R_MATRIX > 0.00, abs(sub_R_MATRIX * (2 ** 8 - 1)),
+                                                                 sub_DISPLAYABLE_R_MATRIX[:, :, 2])
+
+                    nan_mean = np.nanmean(r_subsection_pixel_vals)
+                    nan_st_dev = np.nanstd(r_subsection_pixel_vals)
+
+                    dr_height, dr_width, dr_channels = sub_DISPLAYABLE_R_MATRIX.shape
+
+                    hgs.update_histogram(histograms_r, lines_r, "r", 4096, sub_R_MATRIX, r=True)
+                    figs_r["r"].canvas.draw()  # Draw updates subplots in interactive mode
+                    hist_img_r = np.fromstring(figs_r["r"].canvas.tostring_rgb(), dtype=np.uint8,
+                                               sep='')  # convert  to image
+                    hist_img_r = hist_img_r.reshape(figs_r["r"].canvas.get_width_height()[::-1] + (3,))
+                    hist_img_r = cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA)
+                    hist_img_r = bdc.to_16_bit(cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA), 8)
+                    sub_R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
+
+                    sub_R_VALUES = Image.new('RGB', (dr_width, dr_height),
+                                             (eight_bit_max, eight_bit_max, eight_bit_max))
+
+                    draw = ImageDraw.Draw(sub_R_VALUES)
+                    font = ImageFont.truetype('arial.ttf', size=int(20))
+                    (x, y) = (50, 50)
+                    message = "subtracted R Matrix Values\n"
+                    message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
+                    message = message + "Sigma: {0:.4f}".format(nan_st_dev) + "\n\n"
+
+                    message = message + "A+B Sat:  {0:.2f}%".format(
+                        (count_vals_over_4095 / num_tot_pixels) * 100) + "\n"
+                    message = message + "A-B USat:  {0:.2f}%".format((count_vals_lt_zero / num_tot_pixels) * 100) + "\n"
+                    message = message + "NaNs:  {0:.2f}%".format((count_nans / num_tot_pixels) * 100) + "\n"
+
+                    px_to_mm = 5.86 * (10 ** (-3))
+                    message = message + "Shape (px): {0}, {1}".format(sub_h_R_MATRIX, sub_w_R_MATRIX) + "\n"
+                    message = message + "Shape (mm):  {0:.2f},  {1:.2f}".format(sub_h_R_MATRIX * px_to_mm,
+                                                                                sub_w_R_MATRIX * px_to_mm) + "\n"
+
+                    color = 'rgb(0, 0, 0)'  # black color
+                    draw.text((x, y), message, fill=color, font=font)
+                    sub_R_VALUES = np.array(sub_R_VALUES)
+
+                    sub_R_VALUES_resized = cv2.resize(sub_R_VALUES, (w, h), interpolation=cv2.INTER_AREA)
+
+                    sub_VALUES_W_HIST = np.concatenate((sub_R_VALUES_resized * (2 ** 8), np.array(sub_R_HIST)), axis=1)
+                    # R_MATRIX_DISPLAYABLE_FINAL = image
+                    sub_R_MATRIX_DISPLAYABLE_FINAL = np.array(sub_R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
+
+                    sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
+                                                                        interpolation=cv2.INTER_AREA)
+
+                    cv2.imshow("R_MATRIX",
+                               np.concatenate((sub_VALUES_W_HIST, sub_R_MATRIX_DISPLAYABLE_FINAL_resized), axis=1)
+                               )
+
+                prev_R_MATRIX = R_MATRIX
+
                 continue_stream = stream.keep_streaming()
                 s8_frame_count += 1
                 if continue_stream is False:
@@ -340,18 +376,28 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     csvWriter.writerows(r_matrix.tolist())
 
                 # save a matrix
-                a_matrix = a_matrix
+                a_matrix = stream.current_frame_a
                 csv_path = os.path.join(run_folder, "a_matrix_{}.csv".format(n_))
                 with open(csv_path, "w+", newline='') as my_csv:
                     csvWriter = csv.writer(my_csv, delimiter=',')
                     csvWriter.writerows(a_matrix.tolist())
 
                 # save b matrix
-                b_matrix = b_prime_frames[i - 1]
+                b_matrix = stream.current_frame_b
                 csv_path = os.path.join(run_folder, "b_matrix_{}.csv".format(n_))
                 with open(csv_path, "w+", newline='') as my_csv:
                     csvWriter = csv.writer(my_csv, delimiter=',')
                     csvWriter.writerows(b_matrix.tolist())
+
+                stats_csv_path = os.path.join(run_folder, "r_matrices_stats.csv")
+                with open(stats_csv_path, "w+", newline='') as stats_csv:
+                    stats_csvWriter = csv.writer(stats_csv, delimiter=',')
+                    stats_csvWriter.writerow(stats[0])
+                    count = 0
+                    for i in range(start_writing_at, end_writing_at + 1):
+                        count += 1
+                        stats_csvWriter.writerow([count, stats[i][1], stats[i][2]])
+                print("\tMatrices and Matrix Stats have finished writing to file.")
 
 
         if record_r_matrices is False:
