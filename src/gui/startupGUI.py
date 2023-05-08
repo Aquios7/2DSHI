@@ -46,11 +46,11 @@ def handle_button4_click(label3):
     print("s1 toggle button clicked.")
     # swap on/off
     if not s1:
-        label3.config(text='ON')
+        label3.config(text='create new')
         label3.update()
         s1 = True
     else:
-        label3.config(text='OFF')
+        label3.config(text='use previous')
         label3.update()
         s1 = False
 
@@ -60,11 +60,11 @@ def handle_button5_click(label4):
     print("s2 toggle button clicked.")
     # swap on/off
     if not s2:
-        label4.config(text='ON')
+        label4.config(text='create new')
         label4.update()
         s2 = True
     else:
-        label4.config(text='OFF')
+        label4.config(text='use previous')
         label4.update()
         s2 = False
 
@@ -74,11 +74,11 @@ def handle_button6_click(label5):
     print("s3 toggle button clicked.")
     # swap on/off
     if not s3:
-        label5.config(text='ON')
+        label5.config(text='create new')
         label5.update()
         s3 = True
     else:
-        label5.config(text='OFF')
+        label5.config(text='use previous')
         label5.update()
         s3 = False
 
@@ -88,11 +88,11 @@ def handle_button7_click(label6):
     print("s4,s5 toggle button clicked.")
     # swap on/off
     if not s4 and not s5:
-        label6.config(text='ON')
+        label6.config(text='create new')
         label6.update()
         s4, s5 = True, True
     else:
-        label6.config(text='OFF')
+        label6.config(text='use previous')
         label6.update()
         s4, s5 = False, False
 
@@ -242,13 +242,13 @@ def begin_startup(c_directory):
     # label2: shows if test run is on/off
     label2 = tk.Label(root, text='OFF')
     # label3: shows if the program will free-stream
-    label3 = tk.Label(root, text='ON')
+    label3 = tk.Label(root, text='create new')
     # label4: shows if program will coregister in step 2
-    label4 = tk.Label(root, text='ON')
+    label4 = tk.Label(root, text='create new')
     # label5: shows if program will look for static centers in step 3
-    label5 = tk.Label(root, text='ON')
+    label5 = tk.Label(root, text='create new')
     # label6: shows if program will check regions of interest and zoom in for steps 4 and 5
-    label6 = tk.Label(root, text='ON')
+    label6 = tk.Label(root, text='create new')
     # label7: showing the previous run being referenced
     label7 = tk.Label(root, text='OFF')
     # label8: shows previous run data folder

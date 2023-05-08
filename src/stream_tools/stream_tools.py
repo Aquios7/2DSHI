@@ -646,7 +646,7 @@ class Stream:
             sys.exit(0)
 
         gui = runGUI.begin_run(current_direc)
-        gui.destroy()
+        # gui.destroy()
 
         if self.jump_level <= step:
             s6.step_six(self, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,

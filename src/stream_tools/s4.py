@@ -41,7 +41,8 @@ def step_four(stream, continue_stream, autoload_roi=False):
     if stream.test:
         previous_run_directory = stream.test_dir
     previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
-    autoload_roi = True
+    # autoload_roi = True
+    autoload_roi = popups.yes_no_popup("Would you like to autoload roi?")
     # print(previous_run_directory)
 
     prev_sigma_x_path = os.path.join(previous_run_directory, "static_sigma_x.p")
