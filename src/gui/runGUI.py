@@ -212,7 +212,7 @@ def begin_run(c_directory):
     f_directory = c_directory
 
     # Set the window title
-    root.title("2D SHDI Startup")
+    root.title("2D SHDI Run")
 
     # Set the window size
     root.geometry("800x500")

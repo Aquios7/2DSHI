@@ -28,7 +28,7 @@ def step_three(stream, autoload_prev_static_centers=False):
         """)
     if stream.test:
         previous_run_directory = stream.test_dir
-        autoload_prev_static_centers = False
+        autoload_prev_static_centers = True
     else:
         previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
 

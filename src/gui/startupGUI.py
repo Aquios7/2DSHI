@@ -234,7 +234,7 @@ def begin_startup(c_directory):
     # categorize what you are doing for this run
     dropdown_menu = tk.OptionMenu(root, selected_option, *options)
     # dropdown_menu2: pick the step you wish to jump to
-    steps_menu = tk.OptionMenu(root, selected_step, *steps)
+    # steps_menu = tk.OptionMenu(root, selected_step, *steps)
 
     # Add a label to the window
     # label: shows current data folder
@@ -304,7 +304,7 @@ def begin_startup(c_directory):
     # column 4
     button3.grid(row=7, column=4, padx=10, pady=10)
     dropdown_menu.grid(row=1, column=4, padx=10, pady=10)
-    steps_menu.grid(row=3, column=4, padx=10, pady=10)
+    # steps_menu.grid(row=3, column=4, padx=10, pady=10)
 
     # Run the main event loop
     root.mainloop()

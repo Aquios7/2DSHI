@@ -643,6 +643,9 @@ class Stream:
             print("Regions of Interest not defined: Exiting Program")
             sys.exit(0)
 
+        gui = runGUI.begin_run(current_direc)
+        gui.destroy()
+
         if self.jump_level <= step:
             s6.step_six(self, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                    histograms_r, lines_r, figs_r)
@@ -689,4 +692,5 @@ class Stream:
         s9.step_nine(run_folder)
         # tk_app.attempt_to_quit(self.tkapp)
         print("Command line made it here")
+        # possibly add mains.py here
         #sys.exit(0)
