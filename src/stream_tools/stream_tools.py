@@ -500,6 +500,8 @@ class Stream:
 
         # sets stepList for steps 1-5
         self.stepList = stepList
+        if stepList[4]:
+            self.jump_level = 6
 
         # sets the previous directory that will be used
         self.prev_direc = prev_direc

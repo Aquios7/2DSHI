@@ -243,16 +243,6 @@ def begin_run(c_directory):
     label2 = tk.Label(root, text='OFF')
     # label3: shows if the program will free-stream
     label3 = tk.Label(root, text='ON')
-    # label4: shows if program will coregister in step 2
-    label4 = tk.Label(root, text='ON')
-    # label5: shows if program will look for static centers in step 3
-    label5 = tk.Label(root, text='ON')
-    # label6: shows if program will check regions of interest and zoom in for steps 4 and 5
-    label6 = tk.Label(root, text='ON')
-    # label7: showing the previous run being referenced
-    label7 = tk.Label(root, text='OFF')
-    # label8: shows previous run data folder
-    label8 = tk.Label(root, text=prev_direc)
 
     # Add a button to the window
     # button: Data folder update button
@@ -263,43 +253,23 @@ def begin_run(c_directory):
     button3 = tk.Button(root, text="Begin Run", command=lambda: close_window(root, label, selected_option, selected_step))
     # button4: switch for free-stream
     button4 = tk.Button(root, text='Free-stream', command=lambda: handle_button4_click(label3))
-    # button5: corregitration matrix switch
-    button5 = tk.Button(root, text='Coregister Matrix', command=lambda: handle_button5_click(label4))
-    # button6: static centers
-    button6 = tk.Button(root, text='Static Centers', command=lambda: handle_button6_click(label5))
-    # button7: Regions of Interest and Zoom
-    button7 = tk.Button(root, text='ROI and Zoom', command=lambda: handle_button7_click(label6))
-    # button9: previous run update button
-    button9 = tk.Button(root, text="Previous Folder", command=lambda: handle_button9_click(label8, button4, button5, button6, button7), state='disabled')
-    # button8: Previous run
-    button8 = tk.Button(root, text='Previous Run', command=lambda: handle_button8_click(label7, button9))
 
     # set the grid for the buttons, labels, dropdowns
     # column 0
     button.grid(row=0, column=0, padx=5, pady=5)
-    button8.grid(row=1, column=0, padx=5, pady=5)
-    button9.grid(row=2, column=0, padx=5, pady=5)
-    button2.grid(row=3, column=0, padx=5, pady=5)
+    button2.grid(row=1, column=0, padx=5, pady=5)
 
     # column 1
     label.grid(row=0, column=1, padx=5, pady=5)
-    label7.grid(row=1, column=1, padx=5, pady=5)
-    label8.grid(row=2, column=1, padx=5, pady=5)
-    label2.grid(row=3, column=1, padx=5, pady=5)
+    label2.grid(row=1, column=1, padx=5, pady=5)
 
 
     # column 2
     button4.grid(row=4, column=0, padx=5, pady=5)
-    button5.grid(row=5, column=0, padx=5, pady=5)
-    button6.grid(row=6, column=0, padx=5, pady=5)
-    button7.grid(row=7, column=0, padx=5, pady=5)
 
 
     # column 3
     label3.grid(row=4, column=3, padx=5, pady=5)
-    label4.grid(row=5, column=3, padx=5, pady=5)
-    label5.grid(row=6, column=3, padx=5, pady=5)
-    label6.grid(row=7, column=3, padx=5, pady=5)
 
     # column 4
     button3.grid(row=7, column=4, padx=10, pady=10)
@@ -308,4 +278,4 @@ def begin_run(c_directory):
 
     # Run the main event loop
     root.mainloop()
-    return f_directory, test, reason, (s1, s2, s3, s4, s5), prev_direc
+    return f_directory
