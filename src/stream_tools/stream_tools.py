@@ -592,6 +592,13 @@ class Stream:
         self.c_folder = config_folder
         self.save_config()
 
+        # set the jump level from the startupGUI
+        i = 0
+        while i < len(stepList):
+            if i:
+                self.jump_level = i
+            i += 1
+
         while calibration_success is not True:
             try:
                 # app = tk_app.App(self)

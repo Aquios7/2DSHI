@@ -18,26 +18,10 @@ def handle_button_click(label):
     label.config(text=f_directory)
     label.update()
 
-# switches run to test run and back
-def handle_button2_click(label2):
-    global test
-
-    # swap on/off
-    if not test:
-        label2.config(text='RUN')
-        label2.update()
-        test = True
-        print("Run toggle button clicked. True")
-    else:
-        label2.config(text='SKIP')
-        label2.update()
-        test = False
-        print("Run toggle button clicked. False")
-
 # button to begin the run
-def close_window(root, label2):
+def close_window(root):
     root.destroy()
-    return test
+    return
 
 # a check for missing path
 def popup_noPath():
@@ -70,7 +54,7 @@ def popup_noConfig():
 
 # begins the initial tkinter window
 # This window should be used for setup of the initial runs
-def begin_run(c_directory, step, description):
+def begin_run(c_directory, step):
     global f_directory
     global test
     # Create a Tkinter root window
@@ -88,68 +72,26 @@ def begin_run(c_directory, step, description):
     # Add a label to the window
     # label: shows current data folder
     label = tk.Label(root, text=f_directory)
-    # label2: shows if test run is on/off
-    label2 = tk.Label(root, text='RUN')
-    # label3: description of the program running
-    label3 = tk.Label(root, text=description)
 
     # Add a button to the window
     # button: Data folder update button
-    button = tk.Button(root, text="Data folder", command=lambda: handle_button_click(label))
+    button = tk.Button(root, text="Config folder", command=lambda: handle_button_click(label))
     # button2: Test switch
-    button2 = tk.Button(root, text=step, command=lambda: handle_button2_click(label2))
-    # button3: continue run
-    button3 = tk.Button(root, text="Continue", command=lambda: close_window(root, label2))
+    button2 = tk.Button(root, text=step, command=lambda: close_window(root))
 
     # set the grid for the buttons, labels, dropdowns
     # column 0
     button.grid(row=0, column=0, padx=5, pady=5)
-    button2.grid(row=1, column=0, padx=5, pady=5)
-    button3.grid(row=2, column=0, padx=10, pady=10)
+    button2.grid(row=2, column=0, padx=5, pady=5)
 
     # column 1
     label.grid(row=0, column=1, padx=5, pady=5)
-    label2.grid(row=1, column=1, padx=5, pady=5)
 
     # column 2
-
-
-
-    # column 3
-    label3.grid(row=2, column=3, padx=5, pady=5)
 
     # Run the main event loop
     root.mainloop()
     return f_directory
 
-
-description = ("""
-
-
- _______________________________________________________
-|                     Input Image                      |
-|                     1920 x 1200                      |
-|                                                      |
-|                      - - - -                         |
-|                    /        \\                       | 1200
-|                   |  ( x, y)   |                     |
-|                   \\  - - - /                        |
-|                                                      |
-|                                                      |
-|                                                      |
-|______________________________________________________|
-                       1920
-
-
-                  _______________   
-                 |               |                     
-                 |     Static    |
-                 |     Center    | 2*sigma_y
-                 |     of Beam   |                     
-                 |_______________|
-                     2*sigma_x
-
-
-Static center will be different for each camera, warp matrices try to get images as identical as possible.
-""")
-begin_run('~/test', 'Free-Stream', description)
+# testing window
+# begin_run('~/test', 'Free-Stream')

@@ -17,7 +17,6 @@ from image_processing import bit_depth_conversion as bdc
 from path_management import image_management as im
 from datetime import datetime
 from gui import startupGUI
-from gui import runGUI
 
 
 # Create an instance of an ArgumentParser Object
@@ -98,8 +97,8 @@ if __name__ == "__main__":
     stream.set_test(test)
 
     # find the last point that a previous run ended at
-    highest_jump_level = find_previous_run.get_highest_jump_level(stream)
-    stream.offer_to_jump(highest_jump_level)
+    # highest_jump_level = find_previous_run.get_highest_jump_level(stream)
+    # stream.offer_to_jump(highest_jump_level)
 
     # Start steam (Display Histogram if user specified so in input)
     stream.start(config_files_by_cam, config_folder, test, reason, args, run_directory2, current_direc, stepList, prev_direc)

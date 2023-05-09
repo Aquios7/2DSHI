@@ -12,6 +12,8 @@ s2 = False
 s3 = False
 s4 = False
 s5 = False
+s6 = False
+s7 = False
 prev_run = False
 prev_direc = ''
 jstep = ''
@@ -97,20 +99,46 @@ def handle_button7_click(label6):
         s4, s5 = True, True
 
 # switch for a previous run reference
-def handle_button8_click(label7, button9):
-    global prev_run
+def handle_button8_click(label3, label4, label5, label6, label7, label8, button4, button5, button6, button7, button9,
+                         button10, button11):
+    global prev_run, s1, s2, s3, s4, s5, prev_direc
     print("previous run toggle button clicked.")
     # swap on/off
     if not prev_run:
         label7.config(text='ON')
         label7.update()
         prev_run = True
+        button4.config(state='normal')
+        button5.config(state='normal')
+        button6.config(state='normal')
+        button7.config(state='normal')
         button9.config(state='normal')
+        button10.config(state='normal')
+        button11.config(state='normal')
     else:
+        label3.config(text='create new')
+        label3.update()
+        label4.config(text='create new')
+        label4.update()
+        label5.config(text='create new')
+        label5.update()
+        label6.config(text='create new')
+        label6.update()
         label7.config(text='OFF')
         label7.update()
         prev_run = False
+        s1 = False
+        s2 = False
+        s3 = False
+        s4 = False
+        s5 = False
+        button4.config(state='disabled')
+        button5.config(state='disabled')
+        button6.config(state='disabled')
+        button7.config(state='disabled')
         button9.config(state='disabled')
+        button10.config(state='disabled')
+        button11.config(state='disabled')
         prev_run = ''
 
 # updates previous run folder being used for reference
@@ -162,13 +190,24 @@ def handle_button9_click(label8, button4, button5, button6, button7):
     else:
         button7.config(bg=light_red)
 
-# button to begin the run
+# button to begin the startup
 def close_window(root, label, selected_option, selected_step):
     global reason, jstep
     if label.cget('text') == '':
         popup_noPath()
     reason = selected_option.get()
-    jstep = selected_step.get()
+    root.destroy()
+
+# button to begin the run
+def close_window2(root, label, selected_option, selected_step, pick):
+    global reason, jstep, s6, s7
+    if label.cget('text') == '':
+        popup_noPath()
+    reason = selected_option.get()
+    if pick == 's6':
+        s6 = True
+    elif pick == 's7':
+        s7 = True
     root.destroy()
 
 # a check for missing path
@@ -253,6 +292,16 @@ def begin_startup(c_directory):
     label7 = tk.Label(root, text='OFF')
     # label8: shows previous run data folder
     label8 = tk.Label(root, text=prev_direc)
+    # label9: startup title
+    label9 = tk.Label(root, text='Startup')
+    # label10: break
+    label10 = tk.Label(root, text='_____________________________________')
+    # label11: break
+    label11 = tk.Label(root, text='_____________________________________')
+    # label12: break
+    label12 = tk.Label(root, text='_____________________________________')
+    # label13: run title
+    label13 = tk.Label(root, text='Run')
 
     # Add a button to the window
     # button: Data folder update button
@@ -260,54 +309,65 @@ def begin_startup(c_directory):
     # button2: Test switch
     button2 = tk.Button(root, text="Test Run", command=lambda: handle_button2_click(label2))
     # button3: continue run
-    button3 = tk.Button(root, text="Begin Run", command=lambda: close_window(root, label, selected_option, selected_step))
+    button3 = tk.Button(root, text="Begin Startup",
+                        command=lambda: close_window(root, label, selected_option, selected_step))
     # button4: switch for free-stream
-    button4 = tk.Button(root, text='Free-stream', command=lambda: handle_button4_click(label3))
+    button4 = tk.Button(root, text='Free-stream', command=lambda: handle_button4_click(label3), state='disabled')
     # button5: corregitration matrix switch
-    button5 = tk.Button(root, text='Coregister Matrix', command=lambda: handle_button5_click(label4))
+    button5 = tk.Button(root, text='Coregister Matrix', command=lambda: handle_button5_click(label4), state='disabled')
     # button6: static centers
-    button6 = tk.Button(root, text='Static Centers', command=lambda: handle_button6_click(label5))
+    button6 = tk.Button(root, text='Static Centers', command=lambda: handle_button6_click(label5), state='disabled')
     # button7: Regions of Interest and Zoom
-    button7 = tk.Button(root, text='ROI and Zoom', command=lambda: handle_button7_click(label6))
+    button7 = tk.Button(root, text='ROI and Zoom', command=lambda: handle_button7_click(label6), state='disabled')
     # button9: previous run update button
-    button9 = tk.Button(root, text="Previous Folder", command=lambda: handle_button9_click(label8, button4, button5, button6, button7), state='disabled')
+    button9 = tk.Button(root, text="Previous Folder",
+                        command=lambda: handle_button9_click(label8, button4, button5, button6, button7),
+                        state='disabled')
     # button8: Previous run
-    button8 = tk.Button(root, text='Previous Run', command=lambda: handle_button8_click(label7, button9))
+    button8 = tk.Button(root, text='Previous Run',
+                        command=lambda: handle_button8_click(label3, label4, label5, label6, label7, label8,
+                                                             button4, button5, button6, button7, button9, button10,
+                                                             button11))
+    # button10: Run button for free-stream s6
+    button10 = tk.Button(root, text='Run Free-stream',
+                         command=lambda: close_window2(root, label, selected_option, selected_step, 's6'), state='disabled')
+    # button11: Run button for record s7
+    button11 = tk.Button(root, text='Run Record',
+                         command=lambda: close_window2(root, label, selected_option, selected_step, 's7'), state='disabled')
 
     # set the grid for the buttons, labels, dropdowns
     # column 0
-    button.grid(row=0, column=0, padx=5, pady=5)
-    button8.grid(row=1, column=0, padx=5, pady=5)
-    button9.grid(row=2, column=0, padx=5, pady=5)
-    button2.grid(row=3, column=0, padx=5, pady=5)
+    label9.grid(row=0, column=0, padx=5, pady=5)
+    button.grid(row=1, column=0, padx=5, pady=5)
+    button8.grid(row=2, column=0, padx=5, pady=5)
+    button9.grid(row=3, column=0, padx=5, pady=5)
+    button2.grid(row=4, column=0, padx=5, pady=5)
+    button4.grid(row=5, column=0, padx=5, pady=5)
+    button5.grid(row=6, column=0, padx=5, pady=5)
+    button6.grid(row=7, column=0, padx=5, pady=5)
+    button7.grid(row=8, column=0, padx=5, pady=5)
+    button3.grid(row=9, column=0, padx=10, pady=10)
+    label10.grid(row=10, column=0, padx=5, pady=5)
+    label13.grid(row=11, column=0, padx=5, pady=5)
+    button10.grid(row=12, column=0, padx=5, pady=5)
+    button11.grid(row=13, column=0, padx=5, pady=5)
 
     # column 1
-    label.grid(row=0, column=1, padx=5, pady=5)
-    label7.grid(row=1, column=1, padx=5, pady=5)
-    label8.grid(row=2, column=1, padx=5, pady=5)
-    label2.grid(row=3, column=1, padx=5, pady=5)
+    label.grid(row=1, column=1, padx=5, pady=5)
+    label7.grid(row=2, column=1, padx=5, pady=5)
+    label8.grid(row=3, column=1, padx=5, pady=5)
+    label2.grid(row=4, column=1, padx=5, pady=5)
+    label3.grid(row=5, column=1, padx=5, pady=5)
+    label4.grid(row=6, column=1, padx=5, pady=5)
+    label5.grid(row=7, column=1, padx=5, pady=5)
+    label6.grid(row=8, column=1, padx=5, pady=5)
+    dropdown_menu.grid(row=9, column=1, padx=10, pady=10)
+    label11.grid(row=10, column=1, padx=5, pady=5)
 
-
-    # column 2
-    button4.grid(row=4, column=0, padx=5, pady=5)
-    button5.grid(row=5, column=0, padx=5, pady=5)
-    button6.grid(row=6, column=0, padx=5, pady=5)
-    button7.grid(row=7, column=0, padx=5, pady=5)
-
-
-    # column 3
-    label3.grid(row=4, column=3, padx=5, pady=5)
-    label4.grid(row=5, column=3, padx=5, pady=5)
-    label5.grid(row=6, column=3, padx=5, pady=5)
-    label6.grid(row=7, column=3, padx=5, pady=5)
-
-    # column 4
-    button3.grid(row=7, column=4, padx=10, pady=10)
-    dropdown_menu.grid(row=1, column=4, padx=10, pady=10)
     # steps_menu.grid(row=3, column=4, padx=10, pady=10)
 
     # Run the main event loop
     root.mainloop()
-    return f_directory, test, reason, (s1, s2, s3, s4, s5), prev_direc
+    return f_directory, test, reason, (s1, s2, s3, s4, s5, s6, s7), prev_direc
 
-begin_startup('~/test')
+# begin_startup('~/test')
