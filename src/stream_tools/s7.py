@@ -215,8 +215,21 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 draw.text((x, y), message, fill=color, font=font)
                 R_VALUES = np.array(R_VALUES)
 
+                # adding in image
+                mult_factor = 0.5
+                sigma_x_div = int(stream.static_sigmas_x * 0.20 * mult_factor)
+                sigma_y_div = int(stream.static_sigmas_y * 0.20 * mult_factor)
+                angle = 0
+                startAngle = 0
+                endAngle = 360
+                axesLength = (sigma_x_div, sigma_y_div)
+                # Red color in BGR
+                color = (255, 255, 255)
+                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+                                    angle, startAngle, endAngle, color, 1)
+
                 VALUES_W_HIST = np.concatenate((R_VALUES * (2 ** 8), np.array(stream.R_HIST)), axis=1)
-                # R_MATRIX_DISPLAYABLE_FINAL = image
+                R_MATRIX_DISPLAYABLE_FINAL = image
                 # R_MATRIX_DISPLAYABLE_FINAL = np.array(DISPLAYABLE_R_MATRIX * (2 ** 8), dtype='uint16')
                 R_MATRIX_DISPLAYABLE_FINAL = np.array(R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
                 cv2.imshow("R_MATRIX", cv2.resize(
