@@ -182,7 +182,8 @@ class Stream:
 
     def offer_to_jump(self, highest_possible_jump):
         if self.test:
-            offer = 'n'
+            # offer = 'n'
+            offer = uiv.yes_no_quit(sd.OFFER_TO_JUMP.value)
         else:
             offer = uiv.yes_no_quit(sd.OFFER_TO_JUMP.value)
         level_descriptions = {

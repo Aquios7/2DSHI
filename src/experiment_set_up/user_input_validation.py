@@ -1,4 +1,5 @@
 import sys
+import natsort
 
 
 def valid_input(input, options, feedback=True):
@@ -23,7 +24,7 @@ def valid_input_conseq_ints(msg, options, feedback=True):
     if stripped_input[0] == "q":
         sys.exit()
     if int(stripped_input[0]) not in options:
-        print("Please enter one of the following options: ", options)
+        print("Please enter one of the following options: ", sorted(options))
         return False
     return True
 
