@@ -357,8 +357,12 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
 
             sub_R_VALUES_resized = cv2.resize(sub_R_VALUES, (w, h), interpolation=cv2.INTER_AREA)
 
+            # make new d r image
+            image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+                                angle, startAngle, endAngle, color, 1)
+
             sub_VALUES_W_HIST = np.concatenate((sub_R_VALUES_resized * (2 ** 8), np.array(sub_R_HIST)), axis=1)
-            # R_MATRIX_DISPLAYABLE_FINAL = image
+            sub_R_MATRIX_DISPLAYABLE_FINAL = image
             sub_R_MATRIX_DISPLAYABLE_FINAL = np.array(sub_R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
 
             sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
