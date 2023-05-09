@@ -243,18 +243,18 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
                                                      sub_DISPLAYABLE_R_MATRIX[:, :, 2])
 
         mult_factor = 0.5
-        # sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
-        # sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma * mult_factor)
+        sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
+        sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma * mult_factor)
         angle = 0
         startAngle = 0
         endAngle = 360
-        # axesLength = (sigma_x_div, sigma_y_div)
+        axesLength = (sigma_x_div, sigma_y_div)
         # Red color in BGR
         color = (255, 255, 255)
         # Line thickness of 5 px
         thickness = -1
-        # image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
-        #                     angle, startAngle, endAngle, color, 1)
+        image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+                            angle, startAngle, endAngle, color, 1)
 
         # blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
         # blk_image2 = cv2.ellipse(blk_image.copy(), R_MATRIX_CENTER, axesLength,
@@ -307,7 +307,7 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
 
 
         VALUES_W_HIST = np.concatenate((R_VALUES_resized * (2 ** 8), np.array(R_HIST)), axis=1)
-        # R_MATRIX_DISPLAYABLE_FINAL = image
+        R_MATRIX_DISPLAYABLE_FINAL = image
         R_MATRIX_DISPLAYABLE_FINAL = np.array(R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
 
         #print("concat first arg, VALUES_W_HIST, size:", VALUES_W_HIST.shape)

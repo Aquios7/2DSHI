@@ -653,10 +653,10 @@ class Stream:
             print("Regions of Interest not defined: Exiting Program")
             sys.exit(0)
 
-        gui = runGUI.begin_run(current_direc)
+        # gui = runGUI.begin_run(current_direc)
         # gui.destroy()
 
-        if self.jump_level <= step:
+        if self.jump_level <= 6:
             s6.step_six(self, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                    histograms_r, lines_r, figs_r)
 
