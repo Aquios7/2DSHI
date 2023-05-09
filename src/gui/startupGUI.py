@@ -7,11 +7,11 @@ import configparser as cparse
 f_directory = ''
 test = False
 reason = ''
-s1 = True
-s2 = True
-s3 = True
-s4 = True
-s5 = True
+s1 = False
+s2 = False
+s3 = False
+s4 = False
+s5 = False
 prev_run = False
 prev_direc = ''
 jstep = ''
@@ -73,28 +73,28 @@ def handle_button6_click(label5):
     global s3
     print("s3 toggle button clicked.")
     # swap on/off
-    if not s3:
+    if s3:
         label5.config(text='create new')
         label5.update()
-        s3 = True
+        s3 = False
     else:
         label5.config(text='use previous')
         label5.update()
-        s3 = False
+        s3 = True
 
 # switches Regions of Interest s4 and zoom s5
 def handle_button7_click(label6):
     global s4, s5
     print("s4,s5 toggle button clicked.")
     # swap on/off
-    if not s4 and not s5:
+    if s4 and s5:
         label6.config(text='create new')
         label6.update()
-        s4, s5 = True, True
+        s4, s5 = False, False
     else:
         label6.config(text='use previous')
         label6.update()
-        s4, s5 = False, False
+        s4, s5 = True, True
 
 # switch for a previous run reference
 def handle_button8_click(label7, button9):
@@ -215,7 +215,7 @@ def begin_startup(c_directory):
     root.title("2D SHDI Startup")
 
     # Set the window size
-    root.geometry("800x500")
+    # root.geometry("800x500")
 
     # Create a list of options for the dropdown menu
     options = ["Calibrate Laser", "Take Shots", "Create Matrices"]
@@ -309,3 +309,5 @@ def begin_startup(c_directory):
     # Run the main event loop
     root.mainloop()
     return f_directory, test, reason, (s1, s2, s3, s4, s5), prev_direc
+
+begin_startup('~/test')
