@@ -45,28 +45,28 @@ def handle_button4_click(label3):
     global s1
     print("s1 toggle button clicked.")
     # swap on/off
-    if not s1:
+    if s1:
         label3.config(text='create new')
         label3.update()
-        s1 = True
+        s1 = False
     else:
         label3.config(text='use previous')
         label3.update()
-        s1 = False
+        s1 = True
 
 # switches coregister s2
 def handle_button5_click(label4):
     global s2
     print("s2 toggle button clicked.")
     # swap on/off
-    if not s2:
+    if s2:
         label4.config(text='create new')
         label4.update()
-        s2 = True
+        s2 = False
     else:
         label4.config(text='use previous')
         label4.update()
-        s2 = False
+        s2 = True
 
 # switches Static Centers s3
 def handle_button6_click(label5):
