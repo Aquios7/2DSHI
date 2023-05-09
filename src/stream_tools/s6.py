@@ -243,8 +243,8 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
                                                      sub_DISPLAYABLE_R_MATRIX[:, :, 2])
 
         mult_factor = 0.5
-        sigma_x_div = int(stream.static_sigmas_x * app.sub_sigma * mult_factor)
-        sigma_y_div = int(stream.static_sigmas_y * app.sub_sigma * mult_factor)
+        sigma_x_div = int(stream.static_sigmas_x * 0.20 * mult_factor)
+        sigma_y_div = int(stream.static_sigmas_y * 0.20 * mult_factor)
         angle = 0
         startAngle = 0
         endAngle = 360
