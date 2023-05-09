@@ -132,6 +132,7 @@ def step_four(stream, continue_stream, autoload_roi=False):
             b_as_16bit = bdc.to_16_bit(stream.current_frame_b)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
+                stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
                 cv2.destroyAllWindows()
             cv2.imshow("A", a_as_16bit)
             cv2.imshow("B Prime", b_as_16bit)
@@ -143,6 +144,7 @@ def step_four(stream, continue_stream, autoload_roi=False):
             a_as_16bit = bdc.to_16_bit(stream.current_frame_a)
             b_as_16bit = bdc.to_16_bit(stream.current_frame_b)
             if cv2.waitKey(1) & 0xFF == ord('q'):
+                stream.current_frame_a, stream.current_frame_b = stream.grab_frames(warp_matrix=stream.warp_matrix)
                 cv2.destroyAllWindows()
             cv2.imshow("A", a_as_16bit)
             cv2.imshow("B Prime", b_as_16bit)

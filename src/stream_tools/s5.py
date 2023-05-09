@@ -46,11 +46,12 @@ def step_five(stream, continue_stream):
     desc = sd.S05_DESC.value
 
     if stream.test:
-        # close_in = False
-        close_in = popups.yes_no_popup(desc)
+        close_in = False
+        # close_in = popups.yes_no_popup(desc)
     else:
         # close_in = uiv.yes_no_quit(desc)
-        close_in = popups.yes_no_popup(desc)
+        # close_in = popups.yes_no_popup(desc)
+        close_in = True
 
     if close_in is True:
         continue_stream = True

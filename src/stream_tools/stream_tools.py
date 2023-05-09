@@ -595,7 +595,7 @@ class Stream:
         # set the jump level from the startupGUI
         i = 0
         while i < len(stepList):
-            if i:
+            if stepList[i]:
                 self.jump_level = i
             i += 1
 
