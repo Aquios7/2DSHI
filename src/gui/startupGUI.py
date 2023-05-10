@@ -370,4 +370,5 @@ def begin_startup(c_directory):
     root.mainloop()
     return f_directory, test, reason, (s1, s2, s3, s4, s5, s6, s7), prev_direc
 
+# used for testing the gui alone
 # begin_startup('~/test')

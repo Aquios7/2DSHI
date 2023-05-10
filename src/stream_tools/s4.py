@@ -44,7 +44,7 @@ def step_four(stream, continue_stream, autoload_roi=False):
     # run previous directory off of the current GUI
     previous_run_directory = stream.prev_direc
     # autoload_roi = True
-    if stream.stepList[3]:
+    if stream.stepList[3] or stream.jump_level > 4 or stream.test:
         autoload_roi = True
     else:
         autoload_roi = popups.yes_no_popup("Would you like to autoload roi?")

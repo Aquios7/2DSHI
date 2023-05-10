@@ -62,6 +62,6 @@ def step_one(stream, histogram, continue_stream):
     stream.save_config()
 
     # testing the curve digitizer
-    if not stream.test:
-        coordsListA, coordsListB = runCurve(stream)
+    # if not stream.test:
+        # coordsListA, coordsListB = runCurve(stream)
 
