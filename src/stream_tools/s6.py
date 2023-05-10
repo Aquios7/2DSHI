@@ -89,26 +89,26 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         x_a, y_a = stream.static_center_a
         x_b, y_b = stream.static_center_b
 
-        # n_sigma = app.foo
-        # h_offset = app.horizontal_offset
-        # v_offset = app.vertical_offset
-        # stream.h_offset = h_offset
-        # stream.v_offset = v_offset
-        # stream.n_sigma = n_sigma
+        n_sigma = 1
+        h_offset = 0
+        v_offset = 0
+        stream.h_offset = h_offset
+        stream.v_offset = v_offset
+        stream.n_sigma = n_sigma
 
-        # stream.roi_a = stream.current_frame_a[
-        #              y_a - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
-        #              y_a + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset,
-        #              x_a - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
-        #              x_a + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
-        #              ]
-        #
-        # stream.roi_b = stream.current_frame_b[
-        #              y_b - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
-        #              y_b + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset:,
-        #              x_b - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
-        #              x_b + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
-        #              ]
+        stream.roi_a = stream.current_frame_a[
+                     y_a - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
+                     y_a + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset,
+                     x_a - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
+                     x_a + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
+                     ]
+
+        stream.roi_b = stream.current_frame_b[
+                     y_b - int(n_sigma * stream.static_sigmas_y) + stream.v_offset:
+                     y_b + int(n_sigma * stream.static_sigmas_y + 1) + stream.v_offset:,
+                     x_b - int(n_sigma * stream.static_sigmas_x) + stream.h_offset:
+                     x_b + int(n_sigma * stream.static_sigmas_x + 1) + stream.h_offset
+                     ]
 
 
         #h = stream.roi_b.shape[0]
