@@ -154,10 +154,10 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
 
         A_ON_B = np.concatenate((ROI_A_WITH_HISTOGRAM, ROI_B_WITH_HISTOGRAM), axis=0)
 
-        plus_ = np.add(stream.roi_a + 1, stream.roi_b + 1)
+        plus_ = np.add(stream.roi_a , stream.roi_b )
         minus_ = np.zeros(stream.roi_a.shape, dtype='int16')
-        minus_ = np.add(minus_, stream.roi_a + 1)
-        minus_ = np.add(minus_, stream.roi_b + 1 * (-1))
+        minus_ = np.add(minus_, stream.roi_a )
+        minus_ = np.add(minus_, stream.roi_b  * (-1))
 
         # Start Saturation Flag Code
 
@@ -180,8 +180,8 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         hgs.update_histogram(histograms_alg, lines_alg, "plus", 4096, plus_, plus=True)
         hgs.update_histogram(histograms_alg, lines_alg, "minus", 4096, minus_, minus=True)
 
-        displayable_plus = cv2.add(stream.roi_a + 1, stream.roi_b + 1) * 16
-        displayable_minus = cv2.subtract(stream.roi_a + 1, stream.roi_b + 1) * 16
+        displayable_plus = cv2.add(stream.roi_a , stream.roi_b ) * 16
+        displayable_minus = cv2.subtract(stream.roi_a , stream.roi_b ) * 16
 
         figs_alg["plus"].canvas.draw()  # Draw updates subplots in interactive mode
         hist_img_plus = np.fromstring(figs_alg["plus"].canvas.tostring_rgb(), dtype=np.uint8, sep='')
@@ -216,7 +216,7 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
         R_MATRIX = np.divide(minus_, plus_)
         h_R_MATRIX = R_MATRIX.shape[0]
         w_R_MATRIX = R_MATRIX.shape[1]
-        R_MATRIX_CENTER = int(w_R_MATRIX/2), int(h_R_MATRIX/2)
+        R_MATRIX_CENTER = (int(w_R_MATRIX/2), int(h_R_MATRIX/2))
 
         #nan_mean = np.nanmean(R_MATRIX.flatten())
         #nan_st_dev = np.nanstd(R_MATRIX.flatten())
@@ -357,11 +357,12 @@ def step_six(stream, figs, histograms, lines, histograms_alg, lines_alg, figs_al
             sub_R_VALUES_resized = cv2.resize(sub_R_VALUES, (w, h), interpolation=cv2.INTER_AREA)
 
             # make new d r image
-            image2 = cv2.ellipse(sub_DISPLAYABLE_R_MATRIX.copy(), sub_R_MATRIX_CENTER, axesLength,
-                                angle, startAngle, endAngle, color, 1)
+            # image2 = cv2.ellipse(sub_DISPLAYABLE_R_MATRIX.copy(), sub_R_MATRIX_CENTER, axesLength,
+            #                     angle=angle, startAngle=startAngle, endAngle=endAngle, color=color,
+            #                      thickness=1)
 
             sub_VALUES_W_HIST = np.concatenate((sub_R_VALUES_resized * (2 ** 8), np.array(sub_R_HIST)), axis=1)
-            sub_R_MATRIX_DISPLAYABLE_FINAL = image2
+            sub_R_MATRIX_DISPLAYABLE_FINAL = sub_DISPLAYABLE_R_MATRIX
             sub_R_MATRIX_DISPLAYABLE_FINAL = np.array(sub_R_MATRIX_DISPLAYABLE_FINAL * (2 ** 8), dtype='uint16')
 
             sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
