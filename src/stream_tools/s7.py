@@ -26,6 +26,8 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
     # saving paths to frames folders
     a_frames_dir = os.path.join(run_folder, "cam_a_frames")
     b_frames_dir = os.path.join(run_folder, "cam_b_frames")
+    # reset frame count
+    stream.frame_count = 0
 
     # app.disable_sigma_slider()
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
@@ -84,12 +86,12 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
 
                 # We initially set the LIMITS of the stream to 3 sigma
                 # This is done so that if Stream Breaks when trying to show 3 sigma, we know something might be wrong?
-                #n_sigma = app.foo
-                #h_offset = app.horizontal_offset
-                #v_offset = app.vertical_offset
-                #stream.h_offset = h_offset
-                #stream.v_offset = v_offset
-                #stream.n_sigma = n_sigma
+                n_sigma = 1
+                h_offset = 0
+                v_offset = 0
+                stream.h_offset = h_offset
+                stream.v_offset = v_offset
+                stream.n_sigma = n_sigma
 
                 stream.roi_a = stream.current_frame_a[
                                y_a - int(stream.n_sigma * stream.static_sigmas_y) + stream.v_offset:
@@ -195,6 +197,11 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
 
                 R_VALUES = Image.new('RGB', (dr_width, dr_height), (eight_bit_max, eight_bit_max, eight_bit_max))
 
+                nan_mean = np.nanmean(r_subsection_pixel_vals)
+                nan_st_dev = np.nanstd(r_subsection_pixel_vals)
+
+                stream.stats.append([len(stream.r_frames), nan_mean, nan_st_dev])
+
                 # initialise the drawing context with
                 # the image object as background
 
@@ -224,9 +231,17 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 endAngle = 360
                 axesLength = (sigma_x_div, sigma_y_div)
                 # Red color in BGR
+                # needed for use in stats, averaging the data
                 color = (255, 255, 255)
+                thickness = -1
+                blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
                 image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
                                     angle, startAngle, endAngle, color, 1)
+                combined = image[:, :, 0] + image[:, :, 1] + image[:, :, 2]
+                rows, cols = np.where(combined > 0)
+
+                for i, j in zip(rows, cols):
+                    r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
 
                 VALUES_W_HIST = np.concatenate((R_VALUES * (2 ** 8), np.array(stream.R_HIST)), axis=1)
                 R_MATRIX_DISPLAYABLE_FINAL = image
@@ -300,8 +315,9 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
                                                                         interpolation=cv2.INTER_AREA)
 
-                    cv2.imshow("sub_R_MATRIX",
-                               np.concatenate((sub_VALUES_W_HIST, sub_R_MATRIX_DISPLAYABLE_FINAL_resized), axis=1)
+                    cv2.imshow("sub_R_MATRIX", cv2.resize(
+                        np.concatenate((VALUES_W_HIST, sub_R_MATRIX_DISPLAYABLE_FINAL), axis=1)
+                        , (R_VIS_WIDTH, R_VIS_HEIGHT))
                                )
 
                 prev_R_MATRIX = R_MATRIX
@@ -318,8 +334,8 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                         averages = list()
                         sigmas = list()
 
-                        starting_frame = int(input("Start at frame: "))
-                        end_frame = int(input("End at frame: "))
+                        starting_frame = 1
+                        end_frame = stream.frame_count
 
                         if (not starting_frame >= 1) or (not starting_frame <= current_r_frame):
                             print("Start frame must be between {0} and {1}".format(1, current_r_frame))
@@ -350,6 +366,7 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                                 val_end = False
                             else:
                                 val_end = True
+
 
                         # for i in range(1, len(stats)):
                         for i in range(starting_frame, end_frame + 1):

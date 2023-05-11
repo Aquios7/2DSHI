@@ -207,6 +207,7 @@ def close_window2(root, label, selected_option, selected_step, pick):
     if pick == 's6':
         s6 = True
     elif pick == 's7':
+        s6 = True
         s7 = True
     root.destroy()
 
@@ -330,10 +331,12 @@ def begin_startup(c_directory):
                                                              button11))
     # button10: Run button for free-stream s6
     button10 = tk.Button(root, text='Run Free-stream',
-                         command=lambda: close_window2(root, label, selected_option, selected_step, 's6'), state='disabled')
+                         command=lambda: close_window2(root, label, selected_option, selected_step, 's6'),
+                         state='disabled')
     # button11: Run button for record s7
     button11 = tk.Button(root, text='Run Record',
-                         command=lambda: close_window2(root, label, selected_option, selected_step, 's7'), state='disabled')
+                         command=lambda: close_window2(root, label, selected_option, selected_step, 's7'),
+                         state='disabled')
 
     # set the grid for the buttons, labels, dropdowns
     # column 0

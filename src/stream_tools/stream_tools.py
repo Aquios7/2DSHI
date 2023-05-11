@@ -647,8 +647,6 @@ class Stream:
         figs_r, histograms_r, lines_r = hgs.initialize_histograms_r()
         time.sleep(1)
 
-        step = 6
-
         if self.static_center_a is None or self.static_center_b is None:
             print("Regions of Interest not defined: Exiting Program")
             sys.exit(0)

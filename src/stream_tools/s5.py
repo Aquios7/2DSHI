@@ -45,7 +45,7 @@ def step_five(stream, continue_stream):
 
     desc = sd.S05_DESC.value
 
-    if stream.test:
+    if stream.test or stream.stepList[4]:
         close_in = False
         # close_in = popups.yes_no_popup(desc)
     else:
