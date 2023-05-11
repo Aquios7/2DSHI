@@ -226,7 +226,7 @@ class Stream:
 
         # check if this is a test run
         if self.test:
-            # default cam
+            # default cam (change to work with no camera at all
             vid = cv2.VideoCapture(0)
             vid2 = cv2.VideoCapture(0)
             devices = [vid, vid2]
@@ -501,7 +501,7 @@ class Stream:
 
         # sets stepList for steps 1-5
         self.stepList = stepList
-        if stepList[4]:
+        if stepList[5]:
             self.jump_level = 6
 
         # sets the previous directory that will be used
@@ -603,7 +603,8 @@ class Stream:
             try:
                 # app = tk_app.App(self)
                 # self.tkapp = app
-                if self.jump_level <= 1:
+                # if self.jump_level <= 1:
+                if self.stepList[0]:
                     s1.step_one(self, histogram, continue_stream)
 
                 if self.jump_level <= 2:
