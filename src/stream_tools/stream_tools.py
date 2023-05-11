@@ -697,8 +697,8 @@ class Stream:
 
         elif self.all_cams.IsGrabbing():
             self.all_cams.StopGrabbing()
-        s9.step_nine(run_folder)
+        # s9.step_nine(run_folder)
         # tk_app.attempt_to_quit(self.tkapp)
-        print("Command line made it here")
+        # print("Command line made it here")
         # possibly add mains.py here
         #sys.exit(0)

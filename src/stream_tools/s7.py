@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from image_processing import bit_depth_conversion as bdc
 from PIL import Image, ImageDraw, ImageFont
 from . import histograms as hgs
+from path_management import image_management as im
 import cv2
 import csv
 from experiment_set_up import user_input_validation as uiv
@@ -175,6 +176,41 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 w_R_MATRIX = R_MATRIX.shape[1]
                 R_MATRIX_CENTER = int(w_R_MATRIX / 2), int(h_R_MATRIX / 2)
 
+                DISPLAYABLE_R_MATRIX = np.zeros((R_MATRIX.shape[0], R_MATRIX.shape[1], 3), dtype=np.uint8)
+                DISPLAYABLE_R_MATRIX[:, :, 1] = np.where(R_MATRIX < 0.00, abs(R_MATRIX * (2 ** 8 - 1)), 0)
+                DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX < 0.00, abs(R_MATRIX * (2 ** 8 - 1)), 0)
+
+                DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX > 0.00, abs(R_MATRIX * (2 ** 8 - 1)),
+                                                         DISPLAYABLE_R_MATRIX[:, :, 2])
+
+                sub_sigma = 0.20
+                sigma_x_div = int(stream.static_sigmas_x * sub_sigma)
+                sigma_y_div = int(stream.static_sigmas_y * sub_sigma)
+                angle = 0
+                startAngle = 0
+                endAngle = 360
+                axesLength = (sigma_x_div, sigma_y_div)
+                # Red color in BGR
+                color = (255, 255, 255)
+                # Line thickness of 5 px
+                thickness = -1
+                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+                                    angle, startAngle, endAngle, color, 1)
+
+                blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
+                blk_image2 = cv2.ellipse(blk_image.copy(), R_MATRIX_CENTER, axesLength,
+                                         angle, startAngle, endAngle, color, thickness)
+
+                combined = blk_image2[:, :, 0] + blk_image2[:, :, 1] + blk_image2[:, :, 2]
+                rows, cols = np.where(combined > 0)
+
+                for i, j in zip(rows, cols):
+                    r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
+
+                nan_mean = np.nanmean(r_subsection_pixel_vals)
+                nan_st_dev = np.nanstd(r_subsection_pixel_vals)
+
+                stream.stats.append([len(stream.r_frames), nan_mean, nan_st_dev])
 
                 DISPLAYABLE_R_MATRIX = np.zeros((R_MATRIX.shape[0], R_MATRIX.shape[1], 3), dtype=np.uint8)
                 DISPLAYABLE_R_MATRIX[:, :, 1] = np.where(R_MATRIX < 0.00, abs(R_MATRIX * (2 ** 8 - 1)), 0)
@@ -182,6 +218,9 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
 
                 DISPLAYABLE_R_MATRIX[:, :, 2] = np.where(R_MATRIX > 0.00, abs(R_MATRIX * (2 ** 8 - 1)),
                                                          DISPLAYABLE_R_MATRIX[:, :, 2])
+
+                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
+                                    angle, startAngle, endAngle, color, 1)
 
                 dr_height, dr_width, dr_channels = DISPLAYABLE_R_MATRIX.shape
 
@@ -197,22 +236,17 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
 
                 R_VALUES = Image.new('RGB', (dr_width, dr_height), (eight_bit_max, eight_bit_max, eight_bit_max))
 
-                nan_mean = np.nanmean(r_subsection_pixel_vals)
-                nan_st_dev = np.nanstd(r_subsection_pixel_vals)
-
-                stream.stats.append([len(stream.r_frames), nan_mean, nan_st_dev])
-
                 # initialise the drawing context with
                 # the image object as background
 
                 draw = ImageDraw.Draw(R_VALUES)
-                font = ImageFont.truetype('arial.ttf', size=int(16.5*stream.n_sigma))
+                font = ImageFont.truetype('arial.ttf', size=int(16.5 * stream.n_sigma))
                 (x, y) = (50, 50)
                 message = "R Matrix Values\n"
-                # message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
-                # message = message + "Sigma: {0:.4f}".format(nan_st_dev)
+                message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
+                message = message + "Sigma: {0:.4f}".format(nan_st_dev)
 
-                px_to_mm = 5.86*(10**(-3))
+                px_to_mm = 5.86 * (10 ** (-3))
                 message = message + "Shape (px): {0}, {1}".format(h_R_MATRIX, w_R_MATRIX) + "\n"
                 message = message + "Shape (mm):  {0:.2f},  {1:.2f}".format(h_R_MATRIX * px_to_mm,
                                                                             w_R_MATRIX * px_to_mm) + "\n"
@@ -221,27 +255,6 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 color = 'rgb(0, 0, 0)'  # black color
                 draw.text((x, y), message, fill=color, font=font)
                 R_VALUES = np.array(R_VALUES)
-
-                # adding in image
-                mult_factor = 0.5
-                sigma_x_div = int(stream.static_sigmas_x * 0.20 * mult_factor)
-                sigma_y_div = int(stream.static_sigmas_y * 0.20 * mult_factor)
-                angle = 0
-                startAngle = 0
-                endAngle = 360
-                axesLength = (sigma_x_div, sigma_y_div)
-                # Red color in BGR
-                # needed for use in stats, averaging the data
-                color = (255, 255, 255)
-                thickness = -1
-                blk_image = np.zeros([h_R_MATRIX, w_R_MATRIX, 3])
-                image = cv2.ellipse(DISPLAYABLE_R_MATRIX.copy(), R_MATRIX_CENTER, axesLength,
-                                    angle, startAngle, endAngle, color, 1)
-                combined = image[:, :, 0] + image[:, :, 1] + image[:, :, 2]
-                rows, cols = np.where(combined > 0)
-
-                for i, j in zip(rows, cols):
-                    r_subsection_pixel_vals = np.append(r_subsection_pixel_vals, R_MATRIX[i, j])
 
                 VALUES_W_HIST = np.concatenate((R_VALUES * (2 ** 8), np.array(stream.R_HIST)), axis=1)
                 R_MATRIX_DISPLAYABLE_FINAL = image
@@ -387,14 +400,14 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                         fig_.savefig(save_path)
                         plot_img = cv2.imread(save_path, cv2.IMREAD_COLOR)
                         cv2.imshow('R Mean Plot', plot_img)
-                        cv2.waitKey(60000)
+                        cv2.waitKey(30000)
                         cv2.destroyAllWindows()
-                        # # range_satisfaction_input = uiv.yes_no_quit("Are you satisfied with this range?")
-                        # range_satisfaction_input = popups.yes_no_popup("Are you satisfied with this range?")
-                        # if range_satisfaction_input is True:
-                        #     satisfied_with_range = True
-                        #     stream.start_writing_at = starting_frame
-                        #     stream.end_writing_at = end_frame
+                        range_satisfaction_input = True
+                        if range_satisfaction_input is True:
+                            satisfied_with_range = True
+                            stream.start_writing_at = starting_frame
+                            stream.end_writing_at = end_frame
+                    satisfied_with_run = True
 
                 # save r matrix
                 n_ += 1
@@ -410,6 +423,9 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 with open(csv_path, "w+", newline='') as my_csv:
                     csvWriter = csv.writer(my_csv, delimiter=',')
                     csvWriter.writerows(a_matrix.tolist())
+                # savee a frames
+                a16 = bdc.to_16_bit(a_matrix)
+                im.save_img("a_{}.png".format(n_), a_frames_dir, a16)
 
                 # save b matrix
                 b_matrix = stream.current_frame_b
@@ -417,6 +433,9 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 with open(csv_path, "w+", newline='') as my_csv:
                     csvWriter = csv.writer(my_csv, delimiter=',')
                     csvWriter.writerows(b_matrix.tolist())
+                # save b frames
+                b16 = bdc.to_16_bit(b_matrix)
+                im.save_img("b_{}.png".format(n_), b_frames_dir, b16)
 
                 print("\tMatrices and Matrix Stats have finished writing to file.")
 
