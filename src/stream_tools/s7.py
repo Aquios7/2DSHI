@@ -274,14 +274,9 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     draw = ImageDraw.Draw(sub_R_VALUES)
                     font = ImageFont.truetype('arial.ttf', size=int(20))
                     (x, y) = (50, 50)
-                    message = "subtracted R Matrix Values\n"
+                    message = "R Matrix Values\n"
                     message = message + "Average: {0:.4f}".format(nan_mean) + "\n"
-                    message = message + "Sigma: {0:.4f}".format(nan_st_dev) + "\n\n"
-
-                    message = message + "A+B Sat:  {0:.2f}%".format(
-                        (count_vals_over_4095 / num_tot_pixels) * 100) + "\n"
-                    message = message + "A-B USat:  {0:.2f}%".format((count_vals_lt_zero / num_tot_pixels) * 100) + "\n"
-                    message = message + "NaNs:  {0:.2f}%".format((count_nans / num_tot_pixels) * 100) + "\n"
+                    message = message + "Sigma: {0:.4f}".format(nan_st_dev)
 
                     px_to_mm = 5.86 * (10 ** (-3))
                     message = message + "Shape (px): {0}, {1}".format(sub_h_R_MATRIX, sub_w_R_MATRIX) + "\n"
@@ -305,7 +300,7 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     sub_R_MATRIX_DISPLAYABLE_FINAL_resized = cv2.resize(sub_R_MATRIX_DISPLAYABLE_FINAL, (w * 2, h),
                                                                         interpolation=cv2.INTER_AREA)
 
-                    cv2.imshow("R_MATRIX",
+                    cv2.imshow("sub_R_MATRIX",
                                np.concatenate((sub_VALUES_W_HIST, sub_R_MATRIX_DISPLAYABLE_FINAL_resized), axis=1)
                                )
 
@@ -406,14 +401,6 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     csvWriter = csv.writer(my_csv, delimiter=',')
                     csvWriter.writerows(b_matrix.tolist())
 
-                stats_csv_path = os.path.join(run_folder, "r_matrices_stats.csv")
-                with open(stats_csv_path, "w+", newline='') as stats_csv:
-                    stats_csvWriter = csv.writer(stats_csv, delimiter=',')
-                    stats_csvWriter.writerow(stats[0])
-                    count = 0
-                    for i in range(start_writing_at, end_writing_at + 1):
-                        count += 1
-                        stats_csvWriter.writerow([count, stats[i][1], stats[i][2]])
                 print("\tMatrices and Matrix Stats have finished writing to file.")
 
 
