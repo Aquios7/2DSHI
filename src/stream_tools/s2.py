@@ -29,11 +29,13 @@ def step_two(stream, continue_stream, autoload_prev_wm1=False):
 
     # point warp matrix at test folder
     if stream.test:
-        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.test_dir)
+        # previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.test_dir)
+        previous_run_directory = stream.prev_direc
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
-        autoload_prev_wm1 = False
+        autoload_prev_wm1 = True
     else:
-        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        # previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        previous_run_directory = stream.prev_direc
         prev_wp1_path = os.path.join(previous_run_directory, "wm1.npy")
     prev_wp1_exist = os.path.exists(prev_wp1_path)
 

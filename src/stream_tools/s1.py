@@ -31,7 +31,7 @@ def step_one(stream, histogram, continue_stream):
     if stream.test:
         # start = popups.yes_no_popup(step_description)
         # start = False
-        start = popups.yes_no_popup(sd.S01_DESC.value)
+        start = popups.yes_no_popup(step_description)
 
     else:
         # start = uiv.yes_no_quit(step_description)  # Grabs user input for whether or not they want to proceed w/ Step 1.

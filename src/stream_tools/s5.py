@@ -24,7 +24,8 @@ def load_wm2_if_present(stream):
     if stream.test:
         previous_run_directory = stream.test_dir
     else:
-        previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        # previous_run_directory = fpr.get_latest_run_direc(path_override=True, path_to_exclude=stream.current_run)
+        previous_run_directory = stream.prev_direc
 
     prev_wp2_path = os.path.join(previous_run_directory, "wm1.npy")
     prev_wp2_exist = os.path.exists(prev_wp2_path)
@@ -45,7 +46,7 @@ def step_five(stream, continue_stream):
 
     desc = sd.S05_DESC.value
 
-    if stream.test:
+    if stream.test or stream.stepList[4]:
         close_in = False
         # close_in = popups.yes_no_popup(desc)
     else:

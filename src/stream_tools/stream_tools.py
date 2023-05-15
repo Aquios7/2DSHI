@@ -16,6 +16,7 @@ from coregistration import find_gaussian_profile as fgp
 from experiment_set_up import find_previous_run as fpr
 from constants import STEP_DESCRIPTIONS as sd
 from experiment_set_up import user_input_validation as uiv
+from gui import popups
 from gui import runGUI
 # used for Linux
 # from src.image_processing import bit_depth_conversion as bdc
@@ -226,7 +227,7 @@ class Stream:
 
         # check if this is a test run
         if self.test:
-            # default cam
+            # default cam (change to work with no camera at all
             vid = cv2.VideoCapture(0)
             vid2 = cv2.VideoCapture(0)
             devices = [vid, vid2]
@@ -501,7 +502,7 @@ class Stream:
 
         # sets stepList for steps 1-5
         self.stepList = stepList
-        if stepList[4]:
+        if stepList[5]:
             self.jump_level = 6
 
         # sets the previous directory that will be used
@@ -586,7 +587,8 @@ class Stream:
         cwd = os.getcwd()
         run_folder = os.path.join(run_directory2)
         self.current_run = run_directory2
-        self.prv_run_dir = fpr.get_latest_run_direc(path_override=True, path_to_exclude=self.current_run)
+        # self.prv_run_dir = fpr.get_latest_run_direc(path_override=True, path_to_exclude=self.current_run)
+        self.prv_run_dir = self.prev_direc
 
         # save to config
         self.c_folder = config_folder
@@ -603,16 +605,19 @@ class Stream:
             try:
                 # app = tk_app.App(self)
                 # self.tkapp = app
-                if self.jump_level <= 1:
-                    s1.step_one(self, histogram, continue_stream)
+                # if self.jump_level <= 1:
+                # if not self.stepList[0]:
+                s1.step_one(self, histogram, continue_stream)
 
-                if self.jump_level <= 2:
+                # if self.jump_level <= 2:
+                if not self.stepList[1]:
                     s2.step_two(self, continue_stream)
                 else:
                     s2.step_two(self, continue_stream, autoload_prev_wm1=True)
                 sp.store_warp_matrices(self, run_folder)
 
-                if self.jump_level <= 3:
+                # if self.jump_level <= 3:
+                if not self.stepList[2]:
                     s3.step_three(self)
                 else:
                     s3.step_three(self, autoload_prev_static_centers=True)
@@ -621,14 +626,16 @@ class Stream:
                 if self.warp_matrix is None:
                     self.jump_level = 10
 
-                if self.jump_level <= 4:
+                # if self.jump_level <= 4:
+                if not self.stepList[3]:
                     s4.step_four(self, continue_stream)
                 else:
                     s4.step_four(self, continue_stream, autoload_roi=True)
                 sp.store_static_sigmas(self, run_folder)
                 sp.store_max_n_sigma(self, run_folder)
 
-                if self.jump_level <= 5:
+                # if self.jump_level <= 5:
+                if not self.stepList[4]:
                     s5.step_five(self, continue_stream)
 
                 calibration_success = True
@@ -647,8 +654,6 @@ class Stream:
         figs_r, histograms_r, lines_r = hgs.initialize_histograms_r()
         time.sleep(1)
 
-        step = 6
-
         if self.static_center_a is None or self.static_center_b is None:
             print("Regions of Interest not defined: Exiting Program")
             sys.exit(0)
@@ -656,7 +661,8 @@ class Stream:
         # gui = runGUI.begin_run(current_direc)
         # gui.destroy()
 
-        if self.jump_level <= 6:
+        # if self.jump_level <= 6:
+        if self.stepList[5]:
             s6.step_six(self, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                    histograms_r, lines_r, figs_r)
 
@@ -683,7 +689,8 @@ class Stream:
 
 
 
-        if self.jump_level <= 7:
+        # if self.jump_level <= 7:
+        if self.stepList[6]:
             s7.step_seven(self, run_folder, figs, histograms, lines, histograms_alg, lines_alg, figs_alg,
                histograms_r, lines_r, figs_r)
 
@@ -695,12 +702,14 @@ class Stream:
         if self.test:
             print("test passed")
             # tk_app.attempt_to_quit(self.tkapp)
+            freestream_ = popups.info("Test Finished")
             sys.exit(0)
 
         elif self.all_cams.IsGrabbing():
             self.all_cams.StopGrabbing()
-        s9.step_nine(run_folder)
+        # s9.step_nine(run_folder)
         # tk_app.attempt_to_quit(self.tkapp)
-        print("Command line made it here")
+        # print("Command line made it here")
         # possibly add mains.py here
+        freestream_ = popups.info("Run Finished")
         #sys.exit(0)
