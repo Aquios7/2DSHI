@@ -56,8 +56,8 @@ def step_three(stream, autoload_prev_static_centers=False):
         # freestream_ = False
         freestream_ = popups.yes_no_popup(step_description)
     else:
-        # freestream_ = uiv.yes_no_quit(step_description)
-        freestream_ = popups.yes_no_popup(step_description)
+        freestream_ = False
+        # freestream_ = popups.yes_no_popup(step_description)
 
     if freestream_ is True:
         continue_stream = True
