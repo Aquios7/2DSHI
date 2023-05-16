@@ -12,8 +12,8 @@ s2 = False
 s3 = False
 s4 = False
 s5 = False
-s6 = False
-s7 = False
+s6 = True
+s7 = True
 prev_run = False
 prev_direc = ''
 jstep = ''
@@ -206,8 +206,9 @@ def close_window2(root, label, selected_option, selected_step, pick):
     reason = selected_option.get()
     if pick == 's6':
         s6 = True
+        s7 = True
     elif pick == 's7':
-        s6 = True
+        s6 = False
         s7 = True
     root.destroy()
 

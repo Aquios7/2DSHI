@@ -30,6 +30,11 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
     # reset frame count
     stream.frame_count = 0
 
+    # test saving
+    # a_frames_new = os.path.join(a_frames_dir, "testSave.txt")
+    # with open(a_frames_new, "w") as f:  # open the file in write mode
+    #     f.write("Hello world!")  # write the string "Hello world!" to the file
+
     # app.disable_sigma_slider()
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
 
@@ -124,12 +129,16 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 hist_img_a = bdc.to_16_bit(cv2.resize(hist_img_a, (w, h), interpolation=cv2.INTER_AREA), 8)
                 hist_img_b = bdc.to_16_bit(cv2.resize(hist_img_b, (w, h), interpolation=cv2.INTER_AREA), 8)
 
-                ROI_A_WITH_HISTOGRAM = np.concatenate(
-                    (cv2.cvtColor(hist_img_a, cv2.COLOR_RGB2BGR), cv2.cvtColor(stream.roi_a * 16, cv2.COLOR_GRAY2BGR)),
-                    axis=1)
-                ROI_B_WITH_HISTOGRAM = np.concatenate(
-                    (cv2.cvtColor(hist_img_b, cv2.COLOR_RGB2BGR), cv2.cvtColor(stream.roi_b * 16, cv2.COLOR_GRAY2BGR)),
-                    axis=1)
+                if stream.test:
+                    ROI_A_WITH_HISTOGRAM = np.concatenate((hist_img_a, stream.roi_a * 16), axis=1)
+                    ROI_B_WITH_HISTOGRAM = np.concatenate((hist_img_b, stream.roi_b * 16), axis=1)
+                else:
+                    ROI_A_WITH_HISTOGRAM = np.concatenate(
+                        (cv2.cvtColor(hist_img_a, cv2.COLOR_RGB2BGR), cv2.cvtColor(stream.roi_a * 16, cv2.COLOR_GRAY2BGR)),
+                        axis=1)
+                    ROI_B_WITH_HISTOGRAM = np.concatenate(
+                        (cv2.cvtColor(hist_img_b, cv2.COLOR_RGB2BGR), cv2.cvtColor(stream.roi_b * 16, cv2.COLOR_GRAY2BGR)),
+                        axis=1)
 
                 A_ON_B = np.concatenate((ROI_A_WITH_HISTOGRAM, ROI_B_WITH_HISTOGRAM), axis=0)
 
@@ -149,8 +158,11 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 hist_img_plus = hist_img_plus.reshape(figs_alg["plus"].canvas.get_width_height()[::-1] + (3,))
                 hist_img_plus = cv2.resize(hist_img_plus, (w, h), interpolation=cv2.INTER_AREA)
                 hist_img_plus = bdc.to_16_bit(cv2.resize(hist_img_plus, (w, h), interpolation=cv2.INTER_AREA), 8)
-                PLUS_WITH_HISTOGRAM = np.concatenate((cv2.cvtColor(hist_img_plus, cv2.COLOR_RGB2BGR),
-                                                      cv2.cvtColor(displayable_plus, cv2.COLOR_GRAY2BGR)), axis=1)
+                if stream.test:
+                    PLUS_WITH_HISTOGRAM = np.concatenate((hist_img_plus, displayable_plus), axis=1)
+                else:
+                    PLUS_WITH_HISTOGRAM = np.concatenate((cv2.cvtColor(hist_img_plus, cv2.COLOR_RGB2BGR),
+                                                          cv2.cvtColor(displayable_plus, cv2.COLOR_GRAY2BGR)), axis=1)
 
                 figs_alg["minus"].canvas.draw()  # Draw updates subplots in interactive mode
                 hist_img_minus = np.fromstring(figs_alg["minus"].canvas.tostring_rgb(), dtype=np.uint8,
@@ -158,8 +170,11 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 hist_img_minus = hist_img_minus.reshape(figs_alg["minus"].canvas.get_width_height()[::-1] + (3,))
                 hist_img_minus = cv2.resize(hist_img_minus, (w, h), interpolation=cv2.INTER_AREA)
                 hist_img_minus = bdc.to_16_bit(cv2.resize(hist_img_minus, (w, h), interpolation=cv2.INTER_AREA), 8)
-                MINUS_WITH_HISTOGRAM = np.concatenate((cv2.cvtColor(hist_img_minus, cv2.COLOR_RGB2BGR),
-                                                       cv2.cvtColor(displayable_minus, cv2.COLOR_GRAY2BGR)), axis=1)
+                if stream.test:
+                    MINUS_WITH_HISTOGRAM = np.concatenate((hist_img_minus, displayable_minus), axis=1)
+                else:
+                    MINUS_WITH_HISTOGRAM = np.concatenate((cv2.cvtColor(hist_img_minus, cv2.COLOR_RGB2BGR),
+                                                           cv2.cvtColor(displayable_minus, cv2.COLOR_GRAY2BGR)), axis=1)
 
                 ALGEBRA = np.concatenate((PLUS_WITH_HISTOGRAM, MINUS_WITH_HISTOGRAM), axis=0)
                 DASHBOARD = np.concatenate((A_ON_B, ALGEBRA), axis=1)
@@ -232,7 +247,10 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 hist_img_r = cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA)
                 hist_img_r = bdc.to_16_bit(cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA), 8)
 
-                stream.R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
+                if stream.test:
+                    stream.R_HIST = hist_img_r
+                else:
+                    stream.R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
 
                 R_VALUES = Image.new('RGB', (dr_width, dr_height), (eight_bit_max, eight_bit_max, eight_bit_max))
 
@@ -294,7 +312,10 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                     hist_img_r = hist_img_r.reshape(figs_r["r"].canvas.get_width_height()[::-1] + (3,))
                     hist_img_r = cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA)
                     hist_img_r = bdc.to_16_bit(cv2.resize(hist_img_r, (w, h), interpolation=cv2.INTER_AREA), 8)
-                    sub_R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
+                    if stream.test:
+                        sub_R_HIST = hist_img_r
+                    else:
+                        sub_R_HIST = (cv2.cvtColor(hist_img_r, cv2.COLOR_RGB2BGR))
 
                     sub_R_VALUES = Image.new('RGB', (dr_width, dr_height),
                                              (eight_bit_max, eight_bit_max, eight_bit_max))
@@ -437,7 +458,7 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
                 b16 = bdc.to_16_bit(b_matrix)
                 im.save_img("b_{}.png".format(n_), b_frames_dir, b16)
 
-                print("\tMatrices and Matrix Stats have finished writing to file.")
+                print("\tMatrices and Matrix Stats have finished writing to file. b_{}".format(n_))
 
 
         if record_r_matrices is False:
