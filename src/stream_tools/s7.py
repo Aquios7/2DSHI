@@ -30,11 +30,6 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
     # reset frame count
     stream.frame_count = 0
 
-    # test saving
-    # a_frames_new = os.path.join(a_frames_dir, "testSave.txt")
-    # with open(a_frames_new, "w") as f:  # open the file in write mode
-    #     f.write("Hello world!")  # write the string "Hello world!" to the file
-
     # app.disable_sigma_slider()
     X_TO_Y_RATIO = stream.static_sigmas_x/stream.static_sigmas_y
 
@@ -51,6 +46,18 @@ def step_seven(stream, run_folder, figs, histograms, lines, histograms_alg, line
     if stream.test:
         # record_r_matrices = False
         record_r_matrices = popups.yes_no_popup(desc)
+        # test saving
+        if stream.test and record_r_matrices:
+            # a_frames_new = os.path.join(a_frames_dir, "testSave.txt")
+            # with open(a_frames_new, "w") as f:  # open the file in write mode
+            #     f.write("Hello world!")  # write the string "Hello world!" to the file
+            a_path = os.path.join(a_frames_dir, 'test_frame_a_{}.png'.format(n_))
+            b_path = os.path.join(b_frames_dir, 'test_frame_b_{}.png'.format(n_))
+            a16 = cv2.imread(stream.current_frame_a)
+            b16 = cv2.imread(stream.current_frame_b)
+            cv2.imwrite(a_path, a16)
+            cv2.imwrite(b_path, b16)
+            return
 
     else:
         # record_r_matrices = uiv.yes_no_quit(desc)
