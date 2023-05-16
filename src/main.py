@@ -87,6 +87,9 @@ if __name__ == "__main__":
 
     # Prepare Camera Configuration Files
     config_files_by_cam = cam_setup.assign_config_files(camera_configurations_folder)
+    print("these are the cam files --------------------------")
+    print(config_files_by_cam)
+    print("these are the cam files --------------------------")
 
     # Prepare directions for steps 1-5 using the runGUI
 
