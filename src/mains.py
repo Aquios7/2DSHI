@@ -293,9 +293,34 @@ class MainApplication(tk.Frame):
 
             #place the phi and img generation here to remove the buttons
             # csv matrices
-            self.gen_kvaphi_matrices()
-            # iamges
-            self.gen_imgs()
+            if self.alpha_overwrite.get() == "":
+                self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path = genphi.generate_kvaphi_matrices(
+                    self.r_min_full_path_nonans,
+                    self.r_max_full_path_nonans,
+                    self.r_sample_full_path_nonans,
+                    self.r_background_full_path_nonans,
+                    self.analytics_directory,
+                    self.v,
+                    self.alpha)
+                self.gen_kvaphi_label = tk.Label(self.parent, text="")
+                self.gen_kvaphi_label.config(text="Phi matrices generated")
+            else:
+                self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path = genphi.generate_kvaphi_matrices(
+                    self.r_min_full_path_nonans,
+                    self.r_max_full_path_nonans,
+                    self.r_sample_full_path_nonans,
+                    self.r_background_full_path_nonans,
+                    self.analytics_directory,
+                    self.v,
+                    float(self.alpha_overwrite.get()))
+                self.gen_kvaphi_label = tk.Label(self.parent, text="")
+                self.gen_kvaphi_label.config(text="Phi matrices generated")
+            # images
+            paths = phi2png.gen_phi_imgs(self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path)
+            self.phi_image_array = paths[0]
+            self.phi_bg_image_array = paths[0]
+            self.gen_imgs_label = tk.Label(self.parent, text="")
+            self.gen_imgs_label.config(text="Phi imgs generated")
 
 
 
