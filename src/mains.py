@@ -203,7 +203,7 @@ class MainApplication(tk.Frame):
         self.analytics_directory = askdirectory(title="Pick an analytics directory")
         self.analytics_dir_label.config(text=self.analytics_directory)
 
-        self.no_nan_button = tk.Button(self.parent, text="Generate No NaN Files", anchor="w",
+        self.no_nan_button = tk.Button(self.parent, text="Generate Files", anchor="w",
                                           command=self.gen_no_nan_files)
         self.no_nan_button.grid(column=2, row=5, padx=10, pady=1, sticky="W")
 
@@ -282,7 +282,7 @@ class MainApplication(tk.Frame):
                           ("r_max_path_noNaNs", self.r_max_full_path_nonans),
                           ("r_stats_full_path", self.r_stats_full_path),
                           ("alpha", self.alpha),
-                          ("alpha_overwrite", float(self.alpha_overwrite.get())),
+                          ("alpha_overwrite", self.alpha_overwrite.get()),
                           ("v", self.v),
                           ("min_f", self.min_f),
                           ("max_f", self.max_f)]
