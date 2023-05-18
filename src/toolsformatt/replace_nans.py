@@ -18,4 +18,4 @@ def replace_nans_in_file(file, save_to, replace_value=float(0)):
 # checks for dtype
 def is_dtype_object(lst):
     arr = np.array(lst)
-    return arr.dtype == np.object
+    return arr.dtype == object
