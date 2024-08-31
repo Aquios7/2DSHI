@@ -29,7 +29,6 @@ parser.add_argument('-v', '--verbose', action='store_true',
 # activate the arguments passed
 args = parser.parse_args()
 
-
 # hyperlink used in the verbose description
 hyperlink_format = '<a href="{link}">{text}</a>'
 link_text = hyperlink_format.format
