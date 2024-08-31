@@ -203,7 +203,7 @@ class MainApplication(tk.Frame):
         self.analytics_directory = askdirectory(title="Pick an analytics directory")
         self.analytics_dir_label.config(text=self.analytics_directory)
 
-        self.no_nan_button = tk.Button(self.parent, text="Generate No NaN Files", anchor="w",
+        self.no_nan_button = tk.Button(self.parent, text="Generate Files", anchor="w",
                                           command=self.gen_no_nan_files)
         self.no_nan_button.grid(column=2, row=5, padx=10, pady=1, sticky="W")
 
@@ -282,7 +282,7 @@ class MainApplication(tk.Frame):
                           ("r_max_path_noNaNs", self.r_max_full_path_nonans),
                           ("r_stats_full_path", self.r_stats_full_path),
                           ("alpha", self.alpha),
-                          ("alpha_overwrite", float(self.alpha_overwrite.get())),
+                          ("alpha_overwrite", self.alpha_overwrite.get()),
                           ("v", self.v),
                           ("min_f", self.min_f),
                           ("max_f", self.max_f)]
@@ -293,9 +293,34 @@ class MainApplication(tk.Frame):
 
             #place the phi and img generation here to remove the buttons
             # csv matrices
-            self.gen_kvaphi_matrices()
-            # iamges
-            self.gen_imgs()
+            if self.alpha_overwrite.get() == "":
+                self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path = genphi.generate_kvaphi_matrices(
+                    self.r_min_full_path_nonans,
+                    self.r_max_full_path_nonans,
+                    self.r_sample_full_path_nonans,
+                    self.r_background_full_path_nonans,
+                    self.analytics_directory,
+                    self.v,
+                    self.alpha)
+                self.gen_kvaphi_label = tk.Label(self.parent, text="")
+                self.gen_kvaphi_label.config(text="Phi matrices generated")
+            else:
+                self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path = genphi.generate_kvaphi_matrices(
+                    self.r_min_full_path_nonans,
+                    self.r_max_full_path_nonans,
+                    self.r_sample_full_path_nonans,
+                    self.r_background_full_path_nonans,
+                    self.analytics_directory,
+                    self.v,
+                    float(self.alpha_overwrite.get()))
+                self.gen_kvaphi_label = tk.Label(self.parent, text="")
+                self.gen_kvaphi_label.config(text="Phi matrices generated")
+            # images
+            paths = phi2png.gen_phi_imgs(self.phi_csv_path, self.phi_minus_bg_csv_path, self.phi_background_csv_path)
+            self.phi_image_array = paths[0]
+            self.phi_bg_image_array = paths[0]
+            self.gen_imgs_label = tk.Label(self.parent, text="")
+            self.gen_imgs_label.config(text="Phi imgs generated")
 
 
 
